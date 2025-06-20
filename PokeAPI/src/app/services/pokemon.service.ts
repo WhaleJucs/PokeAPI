@@ -6,7 +6,7 @@ import { Observable } from 'rxjs'; // <-- Importe Observable para tipagem
   providedIn: 'root' // Isso faz com que o serviço esteja disponível em toda a aplicação via Injeção de Dependência
 })
 export class PokemonService {
-  private BASE_URL = 'https://pokeapi.co/api/v2/'; // URL base da PokeAPI
+  private BASE_URL = 'https://pokeapi.co/api/v2/pokemon'; // URL base da PokeAPI
 
   // Injeta o HttpClient no construtor
   constructor(private http: HttpClient) { } // <-- Adicione a injeção do HttpClient
@@ -18,7 +18,7 @@ export class PokemonService {
    * @returns Um Observable contendo os dados da lista de Pokémons.
    */
   getPokemons(offset: number = 0, limit: number = 20): Observable<any> {
-    return this.http.get(`<span class="math-inline">\{this\.BASE\_URL\}pokemon?offset\=</span>{offset}&limit=${limit}`);
+    return this.http.get<any>(`${this.BASE_URL}?offset=${offset}&limit=${limit}`);
   }
 
   /**
@@ -27,6 +27,6 @@ export class PokemonService {
    * @returns Um Observable contendo os dados detalhados do Pokémon.
    */
   getPokemonDetails(nameOrId: string): Observable<any> {
-    return this.http.get(`<span class="math-inline">\{this\.BASE\_URL\}pokemon/</span>{nameOrId}`);
+    return this.http.get<any>(`${this.BASE_URL}/${nameOrId}`);
   }
 }
