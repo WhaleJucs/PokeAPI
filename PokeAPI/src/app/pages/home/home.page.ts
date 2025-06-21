@@ -59,6 +59,10 @@ export class HomePage implements OnInit { // Implemente OnInit
   isLoading: boolean = false; // Para mostrar um indicador de carregamento
   selectedPokemon: any = null;
 
+  searchTerm: string = '';
+  filteredPokemons: any[] = [];
+  currentIndex: number = 0;
+
   // Injeção de Dependência: o Angular fornece instâncias de PokemonService e Router
   constructor(
     private pokemonService: PokemonService,
@@ -74,10 +78,11 @@ export class HomePage implements OnInit { // Implemente OnInit
    */
   loadPokemons() {
     this.isLoading = true;
-    this.pokemonService.getPokemons(this.offset, this.limit).subscribe({
+    // Exemplo: carrega os 151 primeiros Pokémons (Kanto)
+    this.pokemonService.getPokemons(0, 151).subscribe({
       next: (response) => {
         const pokemonsList = response.results.map((poke: any, index: number) => {
-          const id = this.offset + index + 1;
+          const id = index + 1;
           return {
             ...poke,
             id,
@@ -85,7 +90,6 @@ export class HomePage implements OnInit { // Implemente OnInit
           };
         });
 
-        // Limite o número de requisições paralelas
         Promise.all(
           pokemonsList.map(async (poke: any) => {
             try {
@@ -102,6 +106,7 @@ export class HomePage implements OnInit { // Implemente OnInit
           })
         ).then((pokemonsWithTypes) => {
           this.pokemons = pokemonsWithTypes;
+          this.filteredPokemons = this.pokemons;
           this.isLoading = false;
         });
       },
@@ -139,5 +144,26 @@ export class HomePage implements OnInit { // Implemente OnInit
 
   closeDetails() {
     this.selectedPokemon = null;
+  }
+
+  /**
+   * Filtra os Pokémons com base no termo de pesquisa.
+   */
+  filterPokemons() {
+    const term = this.searchTerm.toLowerCase();
+    this.filteredPokemons = this.pokemons.filter(
+      (poke: any) =>
+        poke.name.toLowerCase().includes(term) ||
+        poke.id.toString().includes(term)
+    );
+    this.currentIndex = 0; // Sempre volta para o primeiro da lista filtrada
+  }
+
+  prevCard() {
+    if (this.currentIndex > 0) this.currentIndex--;
+  }
+
+  nextCard() {
+    if (this.currentIndex < this.filteredPokemons.length - 1) this.currentIndex++;
   }
 }
