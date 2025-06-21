@@ -1,0 +1,42 @@
+<div class="pokedex-modal-backdrop" (click)="onClose()"></div>
+<div class="pokedex-modal">
+  <button class="close-btn" (click)="onClose()">X</button>
+  <div class="modal-content">
+    <div class="modal-img">
+      <img [src]="pokemon.sprite" [alt]="pokemon.name" />
+    </div>
+    <h2>No.{{ pokemon.id }} {{ pokemon.name | uppercase }}</h2>
+    <div *ngIf="pokemon.types" class="poke-types">
+      <span 
+        class="poke-type" 
+        *ngFor="let type of pokemon.types"
+        [ngStyle]="{'background': typeColors[type]}">
+        {{ type | uppercase }}
+      </span>
+    </div>
+    <div class="poke-details">
+      <div><b>Altura:</b> {{ pokemon.height / 10 }} m</div>
+      <div><b>Peso:</b> {{ pokemon.weight / 10 }} kg</div>
+      <div *ngIf="pokemon.base_experience"><b>XP Base:</b> {{ pokemon.base_experience }}</div>
+      <div *ngIf="pokemon.abilities">
+        <b>Habilidades:</b>
+        <span *ngFor="let ab of pokemon.abilities; let last = last">
+          {{ ab.ability.name | uppercase }}<span *ngIf="!last">, </span>
+        </span>
+      </div>
+    </div>
+    <div class="poke-description">
+      <b>Descrição:</b>
+      <p>{{ description }}</p>
+    </div>
+    <div class="poke-evolution" *ngIf="evolutionLine.length > 1">
+      <b>Linha Evolutiva:</b>
+      <div class="evo-chain">
+        <ng-container *ngFor="let evo of evolutionLine; let last = last">
+          <span>{{ evo | uppercase }}</span>
+          <span *ngIf="!last"> &rarr; </span>
+        </ng-container>
+      </div>
+    </div>
+  </div>
+</div>

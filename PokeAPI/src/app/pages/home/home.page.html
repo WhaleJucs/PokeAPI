@@ -36,4 +36,10 @@
       </ion-buttons>
     </ion-toolbar>
   </ion-footer>
+
+  <app-pokemon-details-modal
+    *ngIf="selectedPokemon"
+    [pokemon]="selectedPokemon"
+    (close)="closeDetails()">
+  </app-pokemon-details-modal>
 </ion-content>

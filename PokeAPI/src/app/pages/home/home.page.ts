@@ -24,6 +24,7 @@ import {
 
 import { PokemonService } from '../../core/services/pokemon.service'; // Importe seu serviço de Pokémon
 import { PokemonCardComponent } from '../../shared/components/pokemon-card/pokemon-card.component'; // Importe o componente PokemonCard
+import { PokemonDetailsModalComponent } from '../../shared/components/pokemon-details-modal/pokemon-details-modal.component'; // Importe o componente PokemonDetailsModal
 
 @Component({
   selector: 'app-home',
@@ -48,6 +49,7 @@ import { PokemonCardComponent } from '../../shared/components/pokemon-card/pokem
     IonButtons,     // Adicionado
     CommonModule,   // **Essencial para *ngIf, *ngFor**
     PokemonCardComponent, // Adicionado o componente PokemonCard
+    PokemonDetailsModalComponent, // Adicionado o componente PokemonDetailsModal
   ],
 })
 export class HomePage implements OnInit { // Implemente OnInit
@@ -55,6 +57,7 @@ export class HomePage implements OnInit { // Implemente OnInit
   offset: number = 0;   // Início da paginação (para a PokeAPI, começa em 0)
   limit: number = 20;   // Quantidade de Pokémons por página
   isLoading: boolean = false; // Para mostrar um indicador de carregamento
+  selectedPokemon: any = null;
 
   // Injeção de Dependência: o Angular fornece instâncias de PokemonService e Router
   constructor(
@@ -131,7 +134,10 @@ export class HomePage implements OnInit { // Implemente OnInit
    * @param pokemonName O nome do Pokémon para navegar.
    */
   goToDetails(pokemonName: string) {
-    // Usa o Router para navegar para a rota 'pokemon-details' com o nome como parâmetro
-    this.router.navigate(['/pokemon-details', pokemonName]);
+    this.selectedPokemon = this.pokemons.find(p => p.name === pokemonName);
+  }
+
+  closeDetails() {
+    this.selectedPokemon = null;
   }
 }
