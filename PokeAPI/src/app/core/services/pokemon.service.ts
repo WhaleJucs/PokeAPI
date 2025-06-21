@@ -29,4 +29,18 @@ export class PokemonService {
   getPokemonDetails(nameOrId: string): Observable<any> {
     return this.http.get<any>(`${this.BASE_URL}/${nameOrId}`);
   }
+
+  /**
+   * Busca informações da espécie do Pokémon (descrições, evolução, etc).
+   */
+  getPokemonSpecies(nameOrId: string): Observable<any> {
+    return this.http.get<any>(`https://pokeapi.co/api/v2/pokemon-species/${nameOrId}`);
+  }
+
+  /**
+   * Busca a cadeia evolutiva a partir da URL.
+   */
+  getEvolutionChain(url: string): Observable<any> {
+    return this.http.get<any>(url);
+  }
 }

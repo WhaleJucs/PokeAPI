@@ -1,0 +1,10 @@
+<ion-card class="pokedex-card">
+  <ion-card-header>
+    <ion-card-title>
+      No.{{ pokemon.id }} {{ pokemon.name | uppercase }}
+    </ion-card-title>
+  </ion-card-header>
+  <ion-card-content>
+    <img [src]="pokemon.sprite" [alt]="pokemon.name" width="96" height="96" />
+  </ion-card-content>
+</ion-card>

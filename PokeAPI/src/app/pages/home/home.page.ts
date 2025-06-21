@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core'; // Importe OnInit
 import { Router } from '@angular/router'; // Importe Router para navegação
 import { CommonModule } from '@angular/common'; // Importe CommonModule para *ngIf e *ngFor
 
+
 // Importações de componentes e módulos do Ionic para Standalone Components
 import {
   IonHeader,
@@ -21,7 +22,8 @@ import {
   IonButtons // Para agrupar botões no toolbar
 } from '@ionic/angular/standalone';
 
-import { PokemonService } from '../services/pokemon.service'; // Importe seu serviço de Pokémon
+import { PokemonService } from '../../core/services/pokemon.service'; // Importe seu serviço de Pokémon
+import { PokemonCardComponent } from '../../shared/components/pokemon-card/pokemon-card.component'; // Importe o componente PokemonCard
 
 @Component({
   selector: 'app-home',
@@ -45,6 +47,7 @@ import { PokemonService } from '../services/pokemon.service'; // Importe seu ser
     IonFooter,      // Adicionado
     IonButtons,     // Adicionado
     CommonModule,   // **Essencial para *ngIf, *ngFor**
+    PokemonCardComponent, // Adicionado o componente PokemonCard
   ],
 })
 export class HomePage implements OnInit { // Implemente OnInit

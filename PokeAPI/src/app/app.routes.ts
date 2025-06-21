@@ -4,7 +4,7 @@ export const routes: Routes = [
   {
     path: 'home',
     // Usa loadComponent para carregar a HomePage de forma "lazy" (sob demanda)
-    loadComponent: () => import('./home/home.page').then((m) => m.HomePage),
+    loadComponent: () => import('./pages/home/home.page').then((m) => m.HomePage),
   },
   {
     path: '',
