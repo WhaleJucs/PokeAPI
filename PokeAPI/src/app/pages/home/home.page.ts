@@ -1,30 +1,13 @@
-import { Component, OnInit } from '@angular/core'; // Importe OnInit
-import { Router } from '@angular/router'; // Importe Router para navegação
-import { CommonModule } from '@angular/common'; // Importe CommonModule para *ngIf e *ngFor
+import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 
+import { IonHeader, IonToolbar, IonTitle, IonContent, IonSpinner } from '@ionic/angular/standalone';
 
-// Importações de componentes e módulos do Ionic para Standalone Components
-import {
-  IonHeader,
-  IonToolbar,
-  IonTitle,
-  IonContent,
-  IonSpinner, // Para o indicador de carregamento
-  IonGrid,
-  IonRow,
-  IonCol,
-  IonCard,
-  IonCardHeader,
-  IonCardTitle,
-  IonCardContent,
-  IonButton,
-  IonFooter, // Para os botões de paginação no rodapé
-  IonButtons // Para agrupar botões no toolbar
-} from '@ionic/angular/standalone';
-
-import { PokemonService } from '../../core/services/pokemon.service'; // Importe seu serviço de Pokémon
-import { PokemonCardComponent } from '../../shared/components/pokemon-card/pokemon-card.component'; // Importe o componente PokemonCard
-import { PokemonDetailsModalComponent } from '../../shared/components/pokemon-details-modal/pokemon-details-modal.component'; // Importe o componente PokemonDetailsModal
+import { PokemonService } from '../../core/services/pokemon.service';
+import { PokemonCardComponent } from '../../shared/components/pokemon-card/pokemon-card.component';
+import { PokemonDetailsModalComponent } from '../../shared/components/pokemon-details-modal/pokemon-details-modal.component';
 
 @Component({
   selector: 'app-home',
@@ -36,49 +19,34 @@ import { PokemonDetailsModalComponent } from '../../shared/components/pokemon-de
     IonToolbar,
     IonTitle,
     IonContent,
-    IonSpinner, // Adicionado
-    IonGrid,    // Adicionado
-    IonRow,     // Adicionado
-    IonCol,     // Adicionado
-    IonCard,    // Adicionado
-    IonCardHeader, // Adicionado
-    IonCardTitle,  // Adicionado
-    IonCardContent, // Adicionado
-    IonButton,      // Adicionado
-    IonFooter,      // Adicionado
-    IonButtons,     // Adicionado
-    CommonModule,   // **Essencial para *ngIf, *ngFor**
-    PokemonCardComponent, // Adicionado o componente PokemonCard
-    PokemonDetailsModalComponent, // Adicionado o componente PokemonDetailsModal
+    IonSpinner,
+    FormsModule,
+    CommonModule,
+    PokemonCardComponent,
+    PokemonDetailsModalComponent,
   ],
 })
-export class HomePage implements OnInit { // Implemente OnInit
-  pokemons: any[] = []; // Array para armazenar os Pokémons
-  offset: number = 0;   // Início da paginação (para a PokeAPI, começa em 0)
-  limit: number = 20;   // Quantidade de Pokémons por página
-  isLoading: boolean = false; // Para mostrar um indicador de carregamento
+export class HomePage implements OnInit {
+  pokemons: any[] = [];
+  isLoading: boolean = false;
   selectedPokemon: any = null;
 
   searchTerm: string = '';
   filteredPokemons: any[] = [];
   currentIndex: number = 0;
 
-  // Injeção de Dependência: o Angular fornece instâncias de PokemonService e Router
   constructor(
     private pokemonService: PokemonService,
-    private router: Router // Injetando o Router para navegação
+    private router: Router
   ) {}
 
   ngOnInit() {
-    this.loadPokemons(); // Carrega os Pokémons quando a página é inicializada
+    this.loadPokemons();
   }
 
-  /**
-   * Carrega a lista de Pokémons da PokeAPI.
-   */
   loadPokemons() {
     this.isLoading = true;
-    // Exemplo: carrega os 151 primeiros Pokémons (Kanto)
+    // Carrega os 151 primeiros Pokémons (Kanto)
     this.pokemonService.getPokemons(0, 151).subscribe({
       next: (response) => {
         const pokemonsList = response.results.map((poke: any, index: number) => {
@@ -116,28 +84,6 @@ export class HomePage implements OnInit { // Implemente OnInit
     });
   }
 
-  /**
-   * Avança para a próxima página de Pokémons.
-   */
-  nextPage() {
-    this.offset += this.limit;
-    this.loadPokemons();
-  }
-
-  /**
-   * Volta para a página anterior de Pokémons.
-   */
-  prevPage() {
-    if (this.offset >= this.limit) {
-      this.offset -= this.limit;
-      this.loadPokemons();
-    }
-  }
-
-  /**
-   * Navega para a tela de detalhes de um Pokémon específico.
-   * @param pokemonName O nome do Pokémon para navegar.
-   */
   goToDetails(pokemonName: string) {
     this.selectedPokemon = this.pokemons.find(p => p.name === pokemonName);
   }
@@ -146,9 +92,6 @@ export class HomePage implements OnInit { // Implemente OnInit
     this.selectedPokemon = null;
   }
 
-  /**
-   * Filtra os Pokémons com base no termo de pesquisa.
-   */
   filterPokemons() {
     const term = this.searchTerm.toLowerCase();
     this.filteredPokemons = this.pokemons.filter(
@@ -156,7 +99,7 @@ export class HomePage implements OnInit { // Implemente OnInit
         poke.name.toLowerCase().includes(term) ||
         poke.id.toString().includes(term)
     );
-    this.currentIndex = 0; // Sempre volta para o primeiro da lista filtrada
+    this.currentIndex = 0;
   }
 
   prevCard() {

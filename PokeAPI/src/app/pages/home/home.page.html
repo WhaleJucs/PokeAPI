@@ -1,23 +1,13 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>PokéDex BSN</ion-title>
-  </ion-toolbar>
-</ion-header>
-
 <ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">PokéDex BSN</ion-title>
-    </ion-toolbar>
-  </ion-header>
-
   <div *ngIf="isLoading" class="ion-text-center ion-padding">
     <ion-spinner name="crescent"></ion-spinner> <p>Carregando Pokémons...</p>
   </div>
 
   <div class="pokedex-bg" *ngIf="!isLoading">
+    <div class="pokedex-title">
+      PokéDex BSN
+    </div>
     <div class="pokedex-header">
-      <h1>POKÉDEX</h1>
       <input
         type="text"
         class="search-bar"
@@ -35,17 +25,6 @@
       <button class="arrow-btn" (click)="nextCard()" [disabled]="currentIndex === filteredPokemons.length - 1">&#9660;</button>
     </div>
   </div>
-
-  <ion-footer>
-    <ion-toolbar>
-      <ion-buttons slot="start">
-        <ion-button (click)="prevPage()" [disabled]="offset === 0">Anterior</ion-button>
-      </ion-buttons>
-      <ion-buttons slot="end">
-        <ion-button (click)="nextPage()">Próximo</ion-button>
-      </ion-buttons>
-    </ion-toolbar>
-  </ion-footer>
 
   <app-pokemon-details-modal
     *ngIf="selectedPokemon"

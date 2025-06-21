@@ -4,3 +4,8 @@
 body {
   font-family: 'Press Start 2P', monospace;
 }
+
+html, body {
+  height: 100%;
+  overflow: hidden;
+}
