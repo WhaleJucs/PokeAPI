@@ -18,7 +18,10 @@
   <ion-grid *ngIf="!isLoading">
     <ion-row>
       <ion-col size="6" size-md="3" *ngFor="let poke of pokemons">
-        <app-pokemon-card [pokemon]="poke"></app-pokemon-card>
+        <app-pokemon-card
+          [pokemon]="poke"
+          (cardClick)="goToDetails($event)">
+        </app-pokemon-card>
       </ion-col>
     </ion-row>
   </ion-grid>

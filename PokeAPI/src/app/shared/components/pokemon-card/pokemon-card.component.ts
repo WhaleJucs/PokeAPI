@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, Output, EventEmitter } from '@angular/core';
 import {
   IonCard,
   IonCardHeader,
@@ -22,4 +22,30 @@ import { CommonModule } from '@angular/common'; // Para pipes como uppercase
 })
 export class PokemonCardComponent {
   @Input() pokemon: any; // Espera um objeto com nome, id, sprite, etc.
+  @Output() cardClick = new EventEmitter<string>();
+
+  onCardClick() {
+    this.cardClick.emit(this.pokemon.name);
+  }
+
+  typeColors: { [key: string]: string } = {
+    fire: '#F08030',
+    water: '#6890F0',
+    grass: '#78C850',
+    electric: '#F8D030',
+    bug: '#A8B820',
+    normal: '#A8A878',
+    poison: '#A040A0',
+    ground: '#E0C068',
+    fairy: '#EE99AC',
+    fighting: '#C03028',
+    psychic: '#F85888',
+    rock: '#B8A038',
+    ghost: '#705898',
+    ice: '#98D8D8',
+    dragon: '#7038F8',
+    dark: '#705848',
+    steel: '#B8B8D0',
+    flying: '#A890F0'
+  };
 }

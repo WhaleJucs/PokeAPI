@@ -70,29 +70,40 @@ export class HomePage implements OnInit { // Implemente OnInit
    * Carrega a lista de Pokémons da PokeAPI.
    */
   loadPokemons() {
-    this.isLoading = true; // Ativa o indicador de carregamento
+    this.isLoading = true;
     this.pokemonService.getPokemons(this.offset, this.limit).subscribe({
-      next: (res: any) => {
-        // A API retorna um array de 'results' com nome e URL.
-        // Precisamos extrair o ID da URL para formar a URL da imagem.
-        this.pokemons = res.results.map((pokemon: any) => {
-          // Exemplo de URL: https://pokeapi.co/api/v2/pokemon/1/
-          // Usamos filter(Boolean) para remover strings vazias após o split
-          const id = pokemon.url.split('/').filter(Boolean).pop();
+      next: (response) => {
+        const pokemonsList = response.results.map((poke: any, index: number) => {
+          const id = this.offset + index + 1;
           return {
-            name: pokemon.name,
-            url: pokemon.url,
-            id: id,
-            // URL padrão para sprites de Pokémons (útil para a lista)
-            imageUrl: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${id}.png`
+            ...poke,
+            id,
+            sprite: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${id}.png`
           };
         });
-        this.isLoading = false; // Desativa o indicador
+
+        // Limite o número de requisições paralelas
+        Promise.all(
+          pokemonsList.map(async (poke: any) => {
+            try {
+              const details = await this.pokemonService.getPokemonDetails(poke.name).toPromise();
+              return {
+                ...poke,
+                types: details.types.map((t: any) => t.type.name),
+                height: details.height,
+                weight: details.weight
+              };
+            } catch {
+              return poke;
+            }
+          })
+        ).then((pokemonsWithTypes) => {
+          this.pokemons = pokemonsWithTypes;
+          this.isLoading = false;
+        });
       },
-      error: (err: any) => {
-        console.error('Erro ao carregar Pokémons:', err);
-        this.isLoading = false; // Desativa o indicador mesmo em erro
-        // Em um app real, você mostraria uma mensagem de erro para o usuário aqui
+      error: () => {
+        this.isLoading = false;
       }
     });
   }
