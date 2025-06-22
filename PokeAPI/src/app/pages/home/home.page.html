@@ -19,7 +19,8 @@
         <app-pokemon-card
           *ngIf="filteredPokemons.length"
           [pokemon]="filteredPokemons[currentIndex]"
-          (cardClick)="goToDetails(filteredPokemons[currentIndex].name)">
+          (cardClick)="goToDetails(filteredPokemons[currentIndex].name)"
+          (favoriteToggled)="toggleFavorite(filteredPokemons[currentIndex])">
         </app-pokemon-card>
         <button class="arrow-btn" (click)="nextCard()" [disabled]="currentIndex === filteredPokemons.length - 1">&#9660;</button>
       </div>

@@ -8,6 +8,8 @@
   cursor: pointer;
   transition: box-shadow 0.2s;
   box-shadow: 0 2px 8px #0002;
+  position: relative;
+  padding-top: 20px;
 
   &:hover {
     box-shadow: 0 4px 16px #0004;
@@ -53,4 +55,16 @@
   margin-top: 4px;
   box-shadow: 0 1px 2px #0003;
   margin-bottom: 0; // Para não aumentar o espaço entre tipos
+}
+
+.favorite-btn {
+  background: none;
+  border: none;
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  cursor: pointer;
+  font-size: 2em;
+  z-index: 2;
+  top: 8px;
 }

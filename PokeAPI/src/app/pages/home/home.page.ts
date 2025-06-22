@@ -120,4 +120,11 @@ export class HomePage implements OnInit {
     const mainIndex = this.pokemons.findIndex(p => p.id === poke.id);
     if (mainIndex !== -1) this.pokemons[mainIndex].seen = true;
   }
+
+  toggleFavorite(pokemon: any) {
+    pokemon.favorite = !pokemon.favorite;
+    // Atualize também no array principal se necessário
+    const mainIndex = this.pokemons.findIndex(p => p.id === pokemon.id);
+    if (mainIndex !== -1) this.pokemons[mainIndex].favorite = pokemon.favorite;
+  }
 }

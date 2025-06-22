@@ -23,9 +23,15 @@ import { CommonModule } from '@angular/common'; // Para pipes como uppercase
 export class PokemonCardComponent {
   @Input() pokemon: any; // Espera um objeto com nome, id, sprite, etc.
   @Output() cardClick = new EventEmitter<string>();
+  @Output() favoriteToggled = new EventEmitter<void>();
 
   onCardClick() {
     this.cardClick.emit(this.pokemon.name);
+  }
+
+  toggleFavorite(event: Event) {
+    event.stopPropagation();
+    this.favoriteToggled.emit();
   }
 
   typeColors: { [key: string]: string } = {
