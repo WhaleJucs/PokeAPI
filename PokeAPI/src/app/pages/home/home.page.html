@@ -1,7 +1,7 @@
 <ion-content [fullscreen]="true">
   <div *ngIf="isLoading" class="loading-container">
     <ion-spinner name="crescent"></ion-spinner>
-    <p>Carregando Pokémons...</p>
+    <p>Loading pokémon...</p>
   </div>
 
   <div *ngIf="filteredPokemons$ | async as pokemons" class="pokedex-bg">
@@ -10,7 +10,7 @@
       <input
         type="text"
         class="search-bar"
-        placeholder="Pesquisar Pokémon..."
+        placeholder="Search Pokémon..."
         [(ngModel)]="searchTerm"
         (input)="filterPokemons()"
       />
@@ -28,14 +28,14 @@
           >
           </app-pokemon-card>
           <div *ngIf="pokemons.length === 0" class="no-results">
-            <p>Nenhum Pokémon encontrado.</p>
+            <p>No pokémon Found.</p>
           </div>
         </ng-container>
 
         <ng-template #loadingDetails>
           <div class="details-loader">
             <ion-spinner name="crescent"></ion-spinner>
-            <p>Carregando detalhes...</p>
+            <p>Loading details...</p>
           </div>
         </ng-template>
 

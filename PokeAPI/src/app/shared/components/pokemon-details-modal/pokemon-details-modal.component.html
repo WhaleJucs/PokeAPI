@@ -15,22 +15,22 @@
       </span>
     </div>
     <div class="poke-details">
-      <div><b>Altura:</b> {{ pokemon.height / 10 }} m</div>
-      <div><b>Peso:</b> {{ pokemon.weight / 10 }} kg</div>
+      <div><b>Height:</b> {{ pokemon.height / 10 }} m</div>
+      <div><b>Weight:</b> {{ pokemon.weight / 10 }} kg</div>
       <div *ngIf="pokemon.base_experience"><b>XP Base:</b> {{ pokemon.base_experience }}</div>
       <div *ngIf="pokemon.abilities">
-        <b>Habilidades:</b>
+        <b>Abilities:</b>
         <span *ngFor="let ab of pokemon.abilities; let last = last">
           {{ ab.ability.name | uppercase }}<span *ngIf="!last">, </span>
         </span>
       </div>
     </div>
     <div class="poke-description">
-      <b>Descrição:</b>
+      <b>Description:</b>
       <p>{{ description }}</p>
     </div>
     <div class="poke-evolution" *ngIf="evolutionLine.length > 1">
-      <b>Linha Evolutiva:</b>
+      <b>Evolution Line:</b>
       <div class="evo-chain">
         <ng-container *ngFor="let evo of evolutionLine; let last = last">
           <span>{{ evo | uppercase }}</span>

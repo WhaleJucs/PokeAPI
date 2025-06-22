@@ -2,7 +2,7 @@
   <div class="sidebar-header">
     <button class="favorite-filter-btn" (click)="toggleFavoriteFilter()">
       <span [class.active]="showOnlyFavorites">&#9733;</span>
-      Favoritos
+      Favorites
     </button>
   </div>
   <div class="sidebar-list" (scroll)="onSidebarScroll($event)">
@@ -34,17 +34,17 @@
       (click)="previousPage()"
       [disabled]="currentPage === 0"
     >
-      Anterior
+      Back
     </button>
     <span class="sidebar-page-info">
-      Página {{ currentPage + 1 }} de {{ totalPages }}
+      Page {{ currentPage + 1 }} de {{ totalPages }}
     </span>
     <button
       class="sidebar-btn right"
       (click)="nextPage()"
       [disabled]="(currentPage + 1) * pageSize >= totalPokemons"
     >
-      Próximo
+      Next
     </button>
   </div>
 </div>
