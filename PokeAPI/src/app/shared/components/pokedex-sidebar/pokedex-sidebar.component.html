@@ -1,24 +1,31 @@
 <div class="pokedex-sidebar">
+  <div class="sidebar-header">
     <button class="favorite-filter-btn" (click)="toggleFavoriteFilter()">
-        <span [class.active]="showOnlyFavorites">&#9733;</span> <!-- Estrela preenchida -->
-        Favoritos
+      <span [class.active]="showOnlyFavorites">&#9733;</span>
+      Favoritos
     </button>
-  <div 
-    class="sidebar-item"
-    *ngFor="let poke of pokemons; let i = index"
-    [class.selected]="i === currentIndex"
-    (click)="onSelect(i)"
-    #sidebarItem>
-    <span class="poke-ball" *ngIf="poke.favorite">
-      <svg width="20" height="20" viewBox="0 0 20 20">
-        <circle cx="10" cy="10" r="9" fill="#fff" stroke="#222" stroke-width="2"/>
-        <path d="M1 10h18" stroke="#222" stroke-width="2"/>
-        <path d="M1 10a9 9 0 0 1 18 0" fill="#ffd700"/> <!-- Dourado para favorito -->
-        <circle cx="10" cy="10" r="3" fill="#fff" stroke="#222" stroke-width="2"/>
-        <circle cx="10" cy="10" r="1" fill="#222"/>
-      </svg>
-    </span>
-    <span class="poke-number">No.{{ poke.id | number:'3.0' }}</span>
-    <span class="poke-name">{{ poke.name | uppercase }}</span>
+  </div>
+  <div class="sidebar-list" (scroll)="onSidebarScroll($event)">
+    <div 
+      class="sidebar-item"
+      *ngFor="let poke of pokemons; let i = index"
+      [class.selected]="i === currentIndex"
+      (click)="onSelect(i)"
+      #sidebarItem>
+      <span class="poke-ball" *ngIf="poke.favorite">
+        <svg width="20" height="20" viewBox="0 0 20 20">
+          <circle cx="10" cy="10" r="9" fill="#fff" stroke="#222" stroke-width="2"/>
+          <path d="M1 10h18" stroke="#222" stroke-width="2"/>
+          <path d="M1 10a9 9 0 0 1 18 0" fill="#ffd700"/> <!-- Dourado para favorito -->
+          <circle cx="10" cy="10" r="3" fill="#fff" stroke="#222" stroke-width="2"/>
+          <circle cx="10" cy="10" r="1" fill="#222"/>
+        </svg>
+      </span>
+      <span class="poke-number">No.{{ poke.id | number:'3.0' }}</span>
+      <span class="poke-name">{{ poke.name | uppercase }}</span>
+    </div>
+    <div *ngIf="isLoadingSidebar" class="sidebar-loader">
+      <ion-spinner name="dots"></ion-spinner>
+    </div>
   </div>
 </div>

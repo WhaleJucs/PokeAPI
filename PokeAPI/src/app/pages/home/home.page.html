@@ -28,7 +28,9 @@
         [pokemons]="filteredPokemons"
         [currentIndex]="currentIndex"
         (select)="selectCard($event)"
-        (favoriteFilterToggled)="toggleFavoriteFilter()">
+        (favoriteFilterToggled)="toggleFavoriteFilter()"
+        (loadMore)="loadNextBatch()"
+        [isLoadingSidebar]="isLoadingSidebar">
       </app-pokedex-sidebar>
     </div>
   </div>

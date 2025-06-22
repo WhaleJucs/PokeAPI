@@ -49,7 +49,11 @@ export class PokemonDetailsModalComponent implements OnChanges {
     // Busca espécie para pegar descrição e URL da cadeia evolutiva
     const species = await this.pokemonService.getPokemonSpecies(this.pokemon.name).toPromise();
     // Pega a primeira descrição em português ou inglês
-    const entry = species.flavor_text_entries.find((e: any) => e.language.name === 'pt' || e.language.name === 'en');
+    const entry = species.flavor_text_entries.find(
+      (e: any) => e.language.name === 'pt' || e.language.name === 'pt-BR'
+    ) || species.flavor_text_entries.find(
+      (e: any) => e.language.name === 'en'
+    );
     this.description = entry ? entry.flavor_text.replace(/\f/g, ' ') : 'Descrição não encontrada.';
 
     // Busca cadeia evolutiva

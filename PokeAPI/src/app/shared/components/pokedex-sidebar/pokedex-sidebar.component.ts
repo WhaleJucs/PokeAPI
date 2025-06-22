@@ -11,8 +11,10 @@ import { CommonModule } from '@angular/common';
 export class PokedexSidebarComponent implements AfterViewInit, OnChanges {
   @Input() pokemons: any[] = [];
   @Input() currentIndex: number = 0;
+  @Input() isLoadingSidebar = false;
   @Output() select = new EventEmitter<number>();
   @Output() favoriteFilterToggled = new EventEmitter<void>();
+  @Output() loadMore = new EventEmitter<void>();
 
   @ViewChildren('sidebarItem', { read: ElementRef }) sidebarItems!: QueryList<ElementRef>;
 
@@ -34,6 +36,14 @@ export class PokedexSidebarComponent implements AfterViewInit, OnChanges {
 
   toggleFavoriteFilter() {
     this.favoriteFilterToggled.emit();
+  }
+
+  onSidebarScroll(event: Event) {
+    const target = event.target as HTMLElement;
+    // Quando chegar perto do fim, emite o evento
+    if (target.scrollTop + target.clientHeight >= target.scrollHeight - 40) {
+      this.loadMore.emit();
+    }
   }
 
   private scrollToSelected() {
