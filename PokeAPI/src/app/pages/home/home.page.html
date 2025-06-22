@@ -16,12 +16,20 @@
     <div class="pokedex-main">
       <div class="card-navigation">
         <button class="arrow-btn" (click)="prevCard()" [disabled]="currentIndex === 0">&#9650;</button>
-        <app-pokemon-card
-          *ngIf="filteredPokemons.length"
-          [pokemon]="filteredPokemons[currentIndex]"
-          (cardClick)="goToDetails(filteredPokemons[currentIndex].name)"
-          (favoriteToggled)="toggleFavorite(filteredPokemons[currentIndex])">
-        </app-pokemon-card>
+        <ng-container *ngIf="!isLoadingDetails; else loadingDetails">
+          <app-pokemon-card
+            *ngIf="filteredPokemons.length"
+            [pokemon]="filteredPokemons[currentIndex]"
+            (cardClick)="goToDetails(filteredPokemons[currentIndex].name)"
+            (favoriteToggled)="toggleFavorite(filteredPokemons[currentIndex])">
+          </app-pokemon-card>
+        </ng-container>
+        <ng-template #loadingDetails>
+          <div class="details-loader">
+            <ion-spinner name="crescent"></ion-spinner>
+            <p>Carregando detalhes do Pokémon...</p>
+          </div>
+        </ng-template>
         <button class="arrow-btn" (click)="nextCard()" [disabled]="currentIndex === filteredPokemons.length - 1">&#9660;</button>
       </div>
       <app-pokedex-sidebar

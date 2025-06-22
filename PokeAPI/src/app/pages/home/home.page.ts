@@ -32,6 +32,7 @@ export class HomePage implements OnInit {
   filteredPokemons: any[] = [];
   isLoading: boolean = false;
   isLoadingSidebar = false;
+  isLoadingDetails = false;
   selectedPokemon: any = null;
 
   searchTerm: string = '';
@@ -217,19 +218,23 @@ export class HomePage implements OnInit {
     this.currentIndex = index;
     let poke = this.filteredPokemons[index];
 
-    // Se ainda não carregado, busca detalhes e substitui na lista
     if (poke.notLoaded) {
-      const details = await this.pokemonService.getPokemonDetails(poke.name).toPromise();
-      poke = {
-        ...poke,
-        types: details.types.map((t: any) => t.type.name),
-        height: details.height,
-        weight: details.weight,
-        sprite: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${poke.id}.png`
-      };
-      // Adiciona ao array principal
-      this.pokemons.push(poke);
-      this.filteredPokemons[index] = poke;
+      this.isLoadingDetails = true; // Inicia o loader
+
+      try {
+        const details = await this.pokemonService.getPokemonDetails(poke.name).toPromise();
+        poke = {
+          ...poke,
+          types: details.types.map((t: any) => t.type.name),
+          height: details.height,
+          weight: details.weight,
+          sprite: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${poke.id}.png`
+        };
+        this.pokemons.push(poke);
+        this.filteredPokemons[index] = poke;
+      } finally {
+        this.isLoadingDetails = false; // Finaliza o loader
+      }
     }
 
     poke.seen = true;

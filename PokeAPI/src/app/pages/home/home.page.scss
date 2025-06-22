@@ -140,3 +140,13 @@ ion-content {
   min-height: 0;
   align-items: stretch;
 }
+
+.details-loader {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 220px;
+  font-family: 'Press Start 2P', monospace;
+  color: #b7a03a;
+}
