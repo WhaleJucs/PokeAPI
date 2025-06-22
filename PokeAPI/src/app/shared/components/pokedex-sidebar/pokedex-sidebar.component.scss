@@ -10,6 +10,7 @@
   box-shadow: -4px 0 12px #b7a03a44 inset, 4px 0 0 #fffbe0 inset;
   scrollbar-width: thick;
   scrollbar-color: #b7a03a #ffe96b;
+  position: relative;
 }
 
 /* Barra de rolagem estilizada */
@@ -80,4 +81,28 @@
   align-items: center;
   margin-right: 8px;
   vertical-align: middle;
+}
+
+.favorite-filter-btn {
+  position: absolute;
+  top: 12px;
+  right: 16px;
+  z-index: 2;
+  margin: 0;
+  background: #ffe96b;
+  border: 2px solid #b7a03a;
+  border-radius: 8px;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 1em;
+  padding: 4px 12px;
+  cursor: pointer;
+  color: #b74c3a;
+  transition: background 0.2s, color 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.favorite-filter-btn .active {
+  color: #ffd700;
+  text-shadow: 1px 1px 2px #b7a03a;
 }

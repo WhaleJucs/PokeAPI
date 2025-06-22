@@ -36,6 +36,7 @@ export class HomePage implements OnInit {
   searchTerm: string = '';
   filteredPokemons: any[] = [];
   currentIndex: number = 0;
+  showOnlyFavorites = false;
 
   constructor(
     private pokemonService: PokemonService,
@@ -94,12 +95,18 @@ export class HomePage implements OnInit {
     this.selectedPokemon = null;
   }
 
+  toggleFavoriteFilter() {
+    this.showOnlyFavorites = !this.showOnlyFavorites;
+    this.filterPokemons();
+  }
+
   filterPokemons() {
-    const term = this.searchTerm.toLowerCase();
+    let term = this.searchTerm?.toLowerCase() || '';
     this.filteredPokemons = this.pokemons.filter(
       (poke: any) =>
-        poke.name.toLowerCase().includes(term) ||
-        poke.id.toString().includes(term)
+        (!this.showOnlyFavorites || poke.favorite) &&
+        (poke.name.toLowerCase().includes(term) ||
+          poke.id.toString().includes(term))
     );
     this.currentIndex = 0;
   }

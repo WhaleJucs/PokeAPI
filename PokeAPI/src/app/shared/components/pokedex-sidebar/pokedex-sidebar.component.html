@@ -1,4 +1,8 @@
 <div class="pokedex-sidebar">
+    <button class="favorite-filter-btn" (click)="toggleFavoriteFilter()">
+        <span [class.active]="showOnlyFavorites">&#9733;</span> <!-- Estrela preenchida -->
+        Favoritos
+    </button>
   <div 
     class="sidebar-item"
     *ngFor="let poke of pokemons; let i = index"

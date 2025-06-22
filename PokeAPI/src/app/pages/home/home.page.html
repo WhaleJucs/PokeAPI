@@ -27,7 +27,8 @@
       <app-pokedex-sidebar
         [pokemons]="filteredPokemons"
         [currentIndex]="currentIndex"
-        (select)="selectCard($event)">
+        (select)="selectCard($event)"
+        (favoriteFilterToggled)="toggleFavoriteFilter()">
       </app-pokedex-sidebar>
     </div>
   </div>

@@ -12,8 +12,11 @@ export class PokedexSidebarComponent implements AfterViewInit, OnChanges {
   @Input() pokemons: any[] = [];
   @Input() currentIndex: number = 0;
   @Output() select = new EventEmitter<number>();
+  @Output() favoriteFilterToggled = new EventEmitter<void>();
 
   @ViewChildren('sidebarItem', { read: ElementRef }) sidebarItems!: QueryList<ElementRef>;
+
+  showOnlyFavorites = false;
 
   ngAfterViewInit() {
     this.scrollToSelected();
@@ -27,6 +30,10 @@ export class PokedexSidebarComponent implements AfterViewInit, OnChanges {
 
   onSelect(index: number) {
     this.select.emit(index);
+  }
+
+  toggleFavoriteFilter() {
+    this.favoriteFilterToggled.emit();
   }
 
   private scrollToSelected() {
