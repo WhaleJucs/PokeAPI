@@ -2,8 +2,8 @@
   position: relative;
   width: 100%;
   height: 100%;
-  background: #ffe23a;
-  border-left: 3px solid #b7a03a;
+  background: var(--theme-sidebar-bg, #ffe23a);
+  border-left: 3px solid var(--theme-sidebar-border, #b7a03a);
   display: flex;
   flex-direction: column;
   box-shadow: none;
@@ -14,7 +14,7 @@
 .sidebar-header {
   flex: 0 0 auto;
   padding: 12px 16px 8px 16px;
-  background: #ffe96b;
+  background: var(--theme-sidebar-header-bg, #ffe96b);
   z-index: 2;
   border-top-left-radius: 13px;
   border-top-right-radius: 13px;
@@ -81,14 +81,14 @@
   border-radius: 8px;
   margin: 2px 8px;
   transition: background 0.2s, border 0.2s;
-  color: #222;
+  color: var(--theme-sidebar-text-name, #222);
   border: 2px solid transparent;
 }
 
 .sidebar-item.selected {
-  background: #fff;
-  color: #222;
-  border: 2px solid #b7a03a;
+  background: var(--theme-sidebar-selected-bg, #fff);
+  color: var(--theme-sidebar-selected-text, #222);
+  border: 2px solid var(--theme-sidebar-border, #b7a03a);
   box-shadow: 2px 2px 0 #b7a03a44;
 }
 
@@ -100,7 +100,7 @@
 }
 
 .poke-number {
-  color: #b74c3a;
+  color: var(--theme-sidebar-text-number, #b74c3a);
   margin-right: 10px;
   font-weight: bold;
   min-width: 60px;
@@ -119,16 +119,16 @@
   padding: 12px 16px;
   position: sticky;
   bottom: 0;
-  background: #ffe23a;
+  background: var(--theme-sidebar-pagination-bg, #ffe23a);
+  border-top: 2px solid var(--theme-sidebar-border, #b7a03a);
   z-index: 3;
-  border-top: 2px solid #b7a03a;
   border-bottom-left-radius: 13px;
   border-bottom-right-radius: 13px;
 }
 
 .sidebar-btn {
-  background: #b7a03a;
-  color: #fffbe0;
+  background: var(--theme-sidebar-pagination-btn-bg, #b7a03a);
+  color: var(--theme-sidebar-pagination-btn-text, #fffbe0);
   border: none;
   border-radius: 4px;
   padding: 6px 18px;
@@ -149,6 +149,6 @@
 }
 .sidebar-page-info {
   font-size: 0.95em;
-  color: #b7a03a;
+  color: var(--theme-sidebar-pagination-info-text, #b7a03a);
   margin: 0 12px;
 }

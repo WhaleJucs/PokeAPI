@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IonContent, IonSpinner } from '@ionic/angular/standalone';
+import { IonContent, IonSpinner, IonLabel, IonToggle } from '@ionic/angular/standalone';
 import { Subject, forkJoin, of, Observable, BehaviorSubject } from 'rxjs';
 import { takeUntil, switchMap, map } from 'rxjs/operators';
 
@@ -24,8 +24,11 @@ import { PokemonData, PokemonDetails } from '../../core/models/pokemon.model';
     PokemonCardComponent,
     PokemonDetailsModalComponent,
     PokedexSidebarComponent,
+    IonLabel,
+    IonToggle,
   ],
 })
+
 export class HomePage implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
 
@@ -51,8 +54,17 @@ export class HomePage implements OnInit, OnDestroy {
   public get totalPages() { return Math.ceil(this.totalPokemons / this.pageSize); }
   public favorites: { name: string; id: number }[] = [];
   public favoritePokemonsDetails: PokemonData[] = [];
+  public isDarkMode: boolean = false;
 
-  constructor(private pokemonService: PokemonService) {}
+  constructor(private pokemonService: PokemonService) {
+    const savedTheme = localStorage.getItem('theme');
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+    if (savedTheme === 'dark' || (savedTheme === null && prefersDark)) {
+      this.isDarkMode = true;
+      document.body.classList.add('dark');
+    }
+  }
 
   ngOnInit() {
     this.loadAllPokemonNames();
@@ -211,7 +223,6 @@ export class HomePage implements OnInit, OnDestroy {
         this.favoritePokemonsDetails = this.favoritePokemonsDetails.filter(fav => fav.id !== pokemon.id);
     }
 
-    // Atualiza o item na lista principal de forma imutável
     const updatedList = this.pokemonSource.getValue().map(p => {
         if (p.id === pokemon.id) {
             return { ...p, favorite: isFavorite };
@@ -223,6 +234,16 @@ export class HomePage implements OnInit, OnDestroy {
 
     if (this.showOnlyFavorites) {
         this.filterPokemons();
+    }
+  }
+
+  public toggleTheme(): void {
+    document.body.classList.toggle('dark', this.isDarkMode);
+    if (this.isDarkMode) {
+      localStorage.setItem('theme', 'dark');
+    } 
+    else {
+      localStorage.setItem('theme', 'light');
     }
   }
 }

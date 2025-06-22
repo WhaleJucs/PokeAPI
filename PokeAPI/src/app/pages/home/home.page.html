@@ -14,6 +14,13 @@
         [(ngModel)]="searchTerm"
         (input)="filterPokemons()"
       />
+      <div class="theme-toggle">
+        <ion-label>Dark Mode</ion-label>
+        <ion-toggle
+          [(ngModel)]="isDarkMode"
+          (ionChange)="toggleTheme()">
+        </ion-toggle>
+    </div>
     </div>
     <div class="pokedex-main">
       <div class="card-navigation">

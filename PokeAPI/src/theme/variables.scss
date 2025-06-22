@@ -9,3 +9,41 @@ html, body {
   height: 100%;
   overflow: hidden;
 }
+
+body.dark {
+  --ion-background-color: #1a2b2c; 
+  --ion-color-primary: #a8d5a8;
+  --ion-color-primary-contrast: #1a2b2c;
+
+  --ion-color-secondary: #f0e68c;
+  --ion-color-secondary-contrast: #1a2b2c;
+  --ion-text-color: #e0e0e0;
+
+  --theme-pokedex-bg: repeating-linear-gradient(
+    135deg,
+    #2c3e3e 0 8px,
+    #1a2b2c 8px 16px
+  );
+
+  --theme-title-color: #a8d5a8;
+  --theme-title-border: #5c7e5c;
+
+  --theme-card-bg: #2c3e3e;
+  --theme-card-border: #5c7e5c;
+  --theme-card-text-light: #a8d5a8;
+  --theme-card-text-dark: #e0e0e0;
+
+  --theme-sidebar-bg: #1a393a;             
+  --theme-sidebar-border: #5c7e5c;         
+  --theme-sidebar-header-bg: #2c3e3e;
+  --theme-sidebar-text-number: #8cbfa0;    
+  --theme-sidebar-text-name: #e0e0e0;
+  --theme-sidebar-text-dark: #f0e68c;
+  --theme-sidebar-text-light: #fffbe0;
+  --theme-sidebar-selected-bg: #a8d5a8;   
+  --theme-sidebar-selected-text: #1a2b2c;
+  --theme-sidebar-pagination-bg: #2c3e3e; 
+  --theme-sidebar-pagination-btn-bg: #5c7e5c;
+  --theme-sidebar-pagination-btn-text: #e0e0e0;
+  --theme-sidebar-pagination-info-text: #8cbfa0;
+}
