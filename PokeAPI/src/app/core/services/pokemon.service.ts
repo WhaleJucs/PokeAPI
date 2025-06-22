@@ -1,54 +1,36 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http'; // <-- Importe o HttpClient
-import { Observable } from 'rxjs'; // <-- Importe Observable para tipagem
+import { HttpClient } from '@angular/common/http';
+import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
-import { throwError } from 'rxjs';
+import { PokemonListResponse, PokemonDetails } from '../models/pokemon.model';
 
 @Injectable({
-  providedIn: 'root' // Isso faz com que o serviço esteja disponível em toda a aplicação via Injeção de Dependência
+  providedIn: 'root'
 })
 export class PokemonService {
-  private BASE_URL = 'https://pokeapi.co/api/v2/pokemon'; // URL base da PokeAPI
+  private BASE_URL = 'https://pokeapi.co/api/v2/pokemon';
 
-  // Injeta o HttpClient no construtor
-  constructor(private http: HttpClient) { } // <-- Adicione a injeção do HttpClient
+  constructor(private http: HttpClient) { }
 
-  /**
-   * Busca uma lista de Pokémons da PokeAPI com paginação.
-   * @param offset O número de Pokémons a pular.
-   * @param limit O número de Pokémons a retornar.
-   * @returns Um Observable contendo os dados da lista de Pokémons.
-   */
-  getPokemons(offset: number = 0, limit: number = 20): Observable<any> {
-    return this.http.get<any>(`${this.BASE_URL}?offset=${offset}&limit=${limit}`)
-    .pipe(
-      catchError(error => {
-        console.error('Ocorreu um erro ao buscar os Pokémons:', error);
-        return throwError(() => new Error('Falha ao carregar os dados. Tente novamente mais tarde.'));
-      })
-    );
+  getPokemons(offset: number = 0, limit: number = 20): Observable<PokemonListResponse> {
+    return this.http.get<PokemonListResponse>(`${this.BASE_URL}?offset=${offset}&limit=${limit}`)
+      .pipe(
+        catchError(error => {
+          console.error('Ocorreu um erro ao buscar os Pokémons:', error);
+          return throwError(() => new Error('Falha ao carregar os dados. Tente novamente mais tarde.'));
+        })
+      );
   }
 
-  /**
-   * Busca os detalhes de um Pokémon específico pelo nome ou ID.
-   * @param nameOrId O nome ou ID do Pokémon.
-   * @returns Um Observable contendo os dados detalhados do Pokémon.
-   */
-  getPokemonDetails(nameOrId: string): Observable<any> {
-    return this.http.get<any>(`${this.BASE_URL}/${nameOrId}`);
+  getPokemonDetails(nameOrId: string | number): Observable<PokemonDetails> {
+    return this.http.get<PokemonDetails>(`${this.BASE_URL}/${nameOrId}`);
   }
 
-  /**
-   * Busca informações da espécie do Pokémon (descrições, evolução, etc).
-   */
-  getPokemonSpecies(nameOrId: string): Observable<any> {
+  getPokemonSpecies(nameOrId: string | number): Observable<any> { 
     return this.http.get<any>(`https://pokeapi.co/api/v2/pokemon-species/${nameOrId}`);
   }
 
-  /**
-   * Busca a cadeia evolutiva a partir da URL.
-   */
-  getEvolutionChain(url: string): Observable<any> {
+  getEvolutionChain(url: string): Observable<any> { 
     return this.http.get<any>(url);
   }
 }
