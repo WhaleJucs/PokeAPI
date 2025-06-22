@@ -133,9 +133,13 @@ export class HomePage implements OnInit, OnDestroy {
         (poke) => poke.name.toLowerCase().includes(term) || poke.id.toString().includes(term)
       );
       results = filteredNames.map((pokeRef) => {
-        // Procura nos pokémons já carregados nesta página
         const loaded = this.pokemonsOnPage.find(p => p.id === pokeRef.id);
-        return loaded || { id: pokeRef.id, name: pokeRef.name, notLoaded: true };
+        return loaded || {
+          id: pokeRef.id,
+          name: pokeRef.name,
+          sprite: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokeRef.id}.png`,
+          notLoaded: true
+        };
       });
     }
     this.currentIndex = 0;
