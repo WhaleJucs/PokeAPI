@@ -1,10 +1,14 @@
 import { Component, Input, Output, EventEmitter, AfterViewInit, QueryList, ViewChildren, SimpleChanges, OnChanges, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { IonicModule } from '@ionic/angular';
 
 @Component({
   selector: 'app-pokedex-sidebar',
   standalone: true,
-  imports: [CommonModule],
+  imports: [
+    CommonModule,
+    IonicModule,
+  ],
   templateUrl: './pokedex-sidebar.component.html',
   styleUrls: ['./pokedex-sidebar.component.scss'],
 })

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -15,9 +15,6 @@ import { PokedexSidebarComponent } from '../../shared/components/pokedex-sidebar
   styleUrls: ['home.page.scss'],
   standalone: true,
   imports: [
-    IonHeader,
-    IonToolbar,
-    IonTitle,
     IonContent,
     IonSpinner,
     FormsModule,
@@ -28,8 +25,8 @@ import { PokedexSidebarComponent } from '../../shared/components/pokedex-sidebar
   ],
 })
 export class HomePage implements OnInit {
-  pokemons: any[] = []; // Pokémons carregados da página atual
-  filteredPokemons: any[] = []; // Pokémons exibidos (página ou busca)
+  pokemons: any[] = [];
+  filteredPokemons: any[] = [];
   isLoading: boolean = false;
   isLoadingSidebar = false;
   isLoadingDetails = false;
@@ -39,7 +36,7 @@ export class HomePage implements OnInit {
   currentIndex: number = 0;
   showOnlyFavorites = false;
 
-  totalPokemons = 1025; // Valor padrão, será atualizado com o count da API
+  totalPokemons = 1025;
   allPokemonNames: { name: string, id: number }[] = [];
 
   currentPage = 0;
@@ -47,6 +44,9 @@ export class HomePage implements OnInit {
   get totalPages() {
     return Math.ceil(this.totalPokemons / this.pageSize);
   }
+
+  favorites: { name: string, id: number }[] = [];
+  favoritePokemonsDetails: any[] = []; // Detalhes completos dos favoritos
 
   constructor(
     private pokemonService: PokemonService,
@@ -58,7 +58,6 @@ export class HomePage implements OnInit {
     this.loadPage(0);
   }
 
-  // Carrega todos os nomes/ids para busca global
   loadAllPokemonNames() {
     this.pokemonService.getPokemons(0, this.totalPokemons).subscribe({
       next: (response) => {
@@ -73,7 +72,6 @@ export class HomePage implements OnInit {
     });
   }
 
-  // Carrega apenas os pokémons da página selecionada
   async loadPage(page: number) {
     this.isLoadingSidebar = true;
     this.currentPage = page;
@@ -116,7 +114,6 @@ export class HomePage implements OnInit {
     this.isLoadingSidebar = false;
   }
 
-  // Filtros e busca
   filterPokemons() {
     let term = this.searchTerm?.toLowerCase() || '';
     let filteredNames = this.allPokemonNames.filter(
@@ -125,15 +122,17 @@ export class HomePage implements OnInit {
         poke.id.toString().includes(term)
     );
 
-    // Se filtro de favoritos, mantenha só os favoritos já carregados
+    // Se filtro de favoritos, use detalhes globais dos favoritos
     if (this.showOnlyFavorites) {
-      filteredNames = filteredNames.filter((poke: any) => {
-        const loaded = this.pokemons.find(p => p.id === poke.id);
-        return loaded && loaded.favorite;
+      this.filteredPokemons = this.favorites.map(fav => {
+        const loaded = this.favoritePokemonsDetails.find(p => p.id === fav.id);
+        return loaded || { ...fav, notLoaded: true };
       });
+      this.currentIndex = 0;
+      return;
     }
 
-    // Paginação manual: só mostra os 150 da página atual, exceto se estiver pesquisando
+    // Paginação manual: só mostra os da página atual, exceto se estiver pesquisando
     if (!this.searchTerm) {
       const start = this.currentPage * this.pageSize;
       const end = start + this.pageSize;
@@ -154,7 +153,6 @@ export class HomePage implements OnInit {
     this.filterPokemons();
   }
 
-  // Navegação e seleção
   prevCard() {
     if (this.currentIndex > 0) this.currentIndex--;
   }
@@ -179,8 +177,12 @@ export class HomePage implements OnInit {
           weight: details.weight,
           sprite: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${poke.id}.png`
         };
-        this.pokemons.push(poke); // Adiciona só esse Pokémon
+        this.pokemons.push(poke);
         this.filteredPokemons[index] = poke;
+        // Se for favorito, atualize detalhes globais
+        if (poke.favorite && !this.favoritePokemonsDetails.find(f => f.id === poke.id)) {
+          this.favoritePokemonsDetails.push({ ...poke });
+        }
       } finally {
         this.isLoadingDetails = false;
       }
@@ -191,17 +193,34 @@ export class HomePage implements OnInit {
     if (mainIndex !== -1) this.pokemons[mainIndex].seen = true;
   }
 
-  // Favoritos
   toggleFavorite(pokemon: any) {
     pokemon.favorite = !pokemon.favorite;
-    // Atualize também no array principal se necessário
     const mainIndex = this.pokemons.findIndex(p => p.id === pokemon.id);
     if (mainIndex !== -1) this.pokemons[mainIndex].favorite = pokemon.favorite;
+
+    if (pokemon.favorite) {
+      // Adiciona aos favoritos se não existir
+      if (!this.favorites.find(fav => fav.id === pokemon.id)) {
+        this.favorites.push({ name: pokemon.name, id: pokemon.id });
+      }
+      // Adiciona detalhes se não existir
+      if (!this.favoritePokemonsDetails.find(fav => fav.id === pokemon.id)) {
+        this.favoritePokemonsDetails.push({ ...pokemon });
+      }
+    } else {
+      // Remove dos favoritos
+      this.favorites = this.favorites.filter(fav => fav.id !== pokemon.id);
+      this.favoritePokemonsDetails = this.favoritePokemonsDetails.filter(fav => fav.id !== pokemon.id);
+    }
+    // Atualiza a lista filtrada se estiver no modo favoritos
+    if (this.showOnlyFavorites) {
+      this.filterPokemons();
+    }
   }
 
-  // Modal de detalhes
   goToDetails(pokemonName: string) {
-    this.selectedPokemon = this.pokemons.find(p => p.name === pokemonName);
+    this.selectedPokemon = this.pokemons.find(p => p.name === pokemonName)
+      || this.favoritePokemonsDetails.find(p => p.name === pokemonName);
   }
 
   closeDetails() {
