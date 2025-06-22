@@ -1,0 +1,83 @@
+.pokedex-sidebar {
+  width: 400px;
+  max-height: 100%;
+  height: 100%;
+  background: #ffe96b;
+  border-left: 6px double #b7a03a;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 12px 0;
+  box-shadow: -4px 0 12px #b7a03a44 inset, 4px 0 0 #fffbe0 inset;
+  scrollbar-width: thick;
+  scrollbar-color: #b7a03a #ffe96b;
+}
+
+/* Barra de rolagem estilizada */
+.pokedex-sidebar::-webkit-scrollbar {
+  width: 18px;
+  background: #ffe96b;
+  border-radius: 12px;
+  border-left: 2px solid #b7a03a;
+  margin-left: 0;
+}
+.pokedex-sidebar::-webkit-scrollbar-thumb {
+  background: linear-gradient(90deg, #ffe96b 0%, #b7a03a 100%);
+  border-radius: 12px;
+  border: 4px double #b7a03a;
+  box-shadow: 0 0 4px #b7a03a88 inset;
+}
+.pokedex-sidebar::-webkit-scrollbar-track {
+  background: #ffe96b;
+  border-radius: 12px;
+  border-left: 2px solid #b7a03a;
+}
+
+/* Sidebar items */
+.sidebar-item {
+  display: flex;
+  align-items: center;
+  padding: 8px 16px;
+  cursor: pointer;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 1em;
+  border-radius: 8px;
+  margin: 2px 8px;
+  transition: background 0.2s, border 0.2s;
+  color: #222;
+  border: 2px solid transparent;
+}
+
+.sidebar-item.selected {
+  background: #fff;
+  color: #222;
+  border: 2px solid #b7a03a;
+  box-shadow: 2px 2px 0 #b7a03a44;
+}
+
+.poke-number {
+  color: #b74c3a;
+  margin-right: 10px;
+  font-weight: bold;
+  min-width: 60px;
+  display: inline-block;
+}
+
+.poke-name {
+  flex: 1;
+  letter-spacing: 1px;
+}
+
+.sidebar-arrow {
+  color: #fff;
+  font-size: 1.2em;
+  margin-right: 8px;
+  text-shadow: 1px 1px 2px #b7a03a, 0 0 2px #000;
+  vertical-align: middle;
+}
+
+.poke-ball {
+  display: inline-flex;
+  align-items: center;
+  margin-right: 8px;
+  vertical-align: middle;
+}

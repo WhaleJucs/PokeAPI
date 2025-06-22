@@ -8,6 +8,7 @@ import { IonHeader, IonToolbar, IonTitle, IonContent, IonSpinner } from '@ionic/
 import { PokemonService } from '../../core/services/pokemon.service';
 import { PokemonCardComponent } from '../../shared/components/pokemon-card/pokemon-card.component';
 import { PokemonDetailsModalComponent } from '../../shared/components/pokemon-details-modal/pokemon-details-modal.component';
+import { PokedexSidebarComponent } from '../../shared/components/pokedex-sidebar/pokedex-sidebar.component';
 
 @Component({
   selector: 'app-home',
@@ -24,6 +25,7 @@ import { PokemonDetailsModalComponent } from '../../shared/components/pokemon-de
     CommonModule,
     PokemonCardComponent,
     PokemonDetailsModalComponent,
+    PokedexSidebarComponent,
   ],
 })
 export class HomePage implements OnInit {
@@ -108,5 +110,14 @@ export class HomePage implements OnInit {
 
   nextCard() {
     if (this.currentIndex < this.filteredPokemons.length - 1) this.currentIndex++;
+  }
+
+  selectCard(index: number) {
+    this.currentIndex = index;
+    const poke = this.filteredPokemons[index];
+    poke.seen = true;
+    // Também marca no array principal, se necessário:
+    const mainIndex = this.pokemons.findIndex(p => p.id === poke.id);
+    if (mainIndex !== -1) this.pokemons[mainIndex].seen = true;
   }
 }

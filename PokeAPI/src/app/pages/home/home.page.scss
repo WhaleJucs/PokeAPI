@@ -27,19 +27,15 @@
 }
 
 .pokedex-bg {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
   background: repeating-linear-gradient(
     135deg,
     #b7e083 0 8px,
     #a3c96d 8px 16px
   );
-  min-height: 0;
-  height: 100vh;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
-  padding: 0;
 }
 
 .pokedex-title {
@@ -94,17 +90,32 @@
   overflow: visible;
 }
 
+.card-navigation {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1 1 0;
+  min-width: 0;
+  min-height: 0;
+  gap: 12px;
+}
+
 .arrow-btn {
-  background: #e0c068;
-  border: 2px solid #3a5d3a;
-  border-radius: 50%;
-  width: 44px;
-  height: 44px;
+  background: #3a5d3a;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
   font-size: 2em;
-  color: #3a5d3a;
+  width: 48px;
+  height: 48px;
+  margin: 8px 0;
   cursor: pointer;
   transition: background 0.2s;
-  margin: 0 0 8px 0;
+  box-shadow: 0 2px 8px #0002;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .arrow-btn:disabled {
@@ -121,4 +132,11 @@ ion-content {
   margin: 0 !important;
   height: 100vh;
   overflow: hidden;
+}
+
+.pokedex-main {
+  display: flex;
+  height: 70vh; // ou 100vh, mas precisa ter altura definida!
+  min-height: 0;
+  align-items: stretch;
 }

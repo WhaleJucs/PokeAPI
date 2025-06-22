@@ -4,9 +4,7 @@
   </div>
 
   <div class="pokedex-bg" *ngIf="!isLoading">
-    <div class="pokedex-title">
-      PokéDex BSN
-    </div>
+    <div class="pokedex-title">PokéDex BSN</div>
     <div class="pokedex-header">
       <input
         type="text"
@@ -15,14 +13,21 @@
         [(ngModel)]="searchTerm"
         (input)="filterPokemons()" />
     </div>
-    <div class="pokedex-list single-card-list">
-      <button class="arrow-btn" (click)="prevCard()" [disabled]="currentIndex === 0">&#9650;</button>
-      <app-pokemon-card
-        *ngIf="filteredPokemons.length"
-        [pokemon]="filteredPokemons[currentIndex]"
-        (cardClick)="goToDetails(filteredPokemons[currentIndex].name)">
-      </app-pokemon-card>
-      <button class="arrow-btn" (click)="nextCard()" [disabled]="currentIndex === filteredPokemons.length - 1">&#9660;</button>
+    <div class="pokedex-main">
+      <div class="card-navigation">
+        <button class="arrow-btn" (click)="prevCard()" [disabled]="currentIndex === 0">&#9650;</button>
+        <app-pokemon-card
+          *ngIf="filteredPokemons.length"
+          [pokemon]="filteredPokemons[currentIndex]"
+          (cardClick)="goToDetails(filteredPokemons[currentIndex].name)">
+        </app-pokemon-card>
+        <button class="arrow-btn" (click)="nextCard()" [disabled]="currentIndex === filteredPokemons.length - 1">&#9660;</button>
+      </div>
+      <app-pokedex-sidebar
+        [pokemons]="filteredPokemons"
+        [currentIndex]="currentIndex"
+        (select)="selectCard($event)">
+      </app-pokedex-sidebar>
     </div>
   </div>
 
