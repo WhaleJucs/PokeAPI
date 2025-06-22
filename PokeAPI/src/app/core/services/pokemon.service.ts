@@ -1,6 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http'; // <-- Importe o HttpClient
 import { Observable } from 'rxjs'; // <-- Importe Observable para tipagem
+import { catchError } from 'rxjs/operators';
+import { throwError } from 'rxjs';
 
 @Injectable({
   providedIn: 'root' // Isso faz com que o serviço esteja disponível em toda a aplicação via Injeção de Dependência
@@ -18,7 +20,13 @@ export class PokemonService {
    * @returns Um Observable contendo os dados da lista de Pokémons.
    */
   getPokemons(offset: number = 0, limit: number = 20): Observable<any> {
-    return this.http.get<any>(`${this.BASE_URL}?offset=${offset}&limit=${limit}`);
+    return this.http.get<any>(`${this.BASE_URL}?offset=${offset}&limit=${limit}`)
+    .pipe(
+      catchError(error => {
+        console.error('Ocorreu um erro ao buscar os Pokémons:', error);
+        return throwError(() => new Error('Falha ao carregar os dados. Tente novamente mais tarde.'));
+      })
+    );
   }
 
   /**
