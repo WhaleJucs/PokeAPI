@@ -28,8 +28,8 @@ import { PokedexSidebarComponent } from '../../shared/components/pokedex-sidebar
   ],
 })
 export class HomePage implements OnInit {
-  pokemons: any[] = [];
-  filteredPokemons: any[] = [];
+  pokemons: any[] = []; // Pokémons carregados da página atual
+  filteredPokemons: any[] = []; // Pokémons exibidos (página ou busca)
   isLoading: boolean = false;
   isLoadingSidebar = false;
   isLoadingDetails = false;
@@ -39,11 +39,14 @@ export class HomePage implements OnInit {
   currentIndex: number = 0;
   showOnlyFavorites = false;
 
-  offset = 0;
-  limit = 150;
   totalPokemons = 1025; // Valor padrão, será atualizado com o count da API
-  allLoaded = false;
   allPokemonNames: { name: string, id: number }[] = [];
+
+  currentPage = 0;
+  pageSize = 150;
+  get totalPages() {
+    return Math.ceil(this.totalPokemons / this.pageSize);
+  }
 
   constructor(
     private pokemonService: PokemonService,
@@ -52,126 +55,65 @@ export class HomePage implements OnInit {
 
   ngOnInit() {
     this.loadAllPokemonNames();
-    this.loadPokemons();
+    this.loadPage(0);
   }
 
-  // Carrega todos os pokémons na inicialização
-  loadPokemons() {
-    this.isLoading = true;
-    this.pokemonService.getPokemons(0, this.limit).subscribe({
+  // Carrega todos os nomes/ids para busca global
+  loadAllPokemonNames() {
+    this.pokemonService.getPokemons(0, this.totalPokemons).subscribe({
       next: (response) => {
-        if (response.count) this.totalPokemons = response.count;
-
-        const pokemonsList = response.results.map((poke: any, index: number) => {
-          // Extrai o id real da URL
-          const match = poke.url.match(/\/pokemon\/(\d+)\//);
-          const id = match ? Number(match[1]) : null;
-          return {
-            ...poke,
-            id,
-            sprite: id
-              ? `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${id}.png`
-              : ''
-          };
-        }).filter((poke: any) => poke.id && poke.id <= this.totalPokemons);
-
-        Promise.all(
-          pokemonsList.map(async (poke: any) => {
-            try {
-              const details = await this.pokemonService.getPokemonDetails(poke.name).toPromise();
-              return {
-                ...poke,
-                types: details.types.map((t: any) => t.type.name),
-                height: details.height,
-                weight: details.weight
-              };
-            } catch {
-              return poke;
-            }
-          })
-        ).then((pokemonsWithTypes) => {
-          this.pokemons = pokemonsWithTypes;
-          this.filteredPokemons = this.pokemons;
-          this.offset = this.pokemons.length;
-          this.isLoading = false;
-        });
-      },
-      error: () => {
-        this.isLoading = false;
-      }
-    });
-  }
-
-  // Carrega o próximo lote de pokémons (infinite scroll)
-  loadNextBatch() {
-    if (this.isLoadingSidebar || this.allLoaded) return;
-    this.isLoadingSidebar = true;
-
-    if (this.pokemons.length >= this.totalPokemons) {
-      this.isLoadingSidebar = false;
-      this.allLoaded = true;
-      return;
-    }
-
-    this.pokemonService.getPokemons(this.offset, this.limit).subscribe({
-      next: (response) => {
-        // Atualiza o totalPokemons se a API retornar o count
-        if (response.count) this.totalPokemons = response.count;
-
-        const remaining = this.totalPokemons - this.pokemons.length;
-        const results = response.results.slice(0, remaining);
-
-        const pokemonsList = results
+        this.allPokemonNames = response.results
           .map((poke: any) => {
-            // Extrai o id real da URL
             const match = poke.url.match(/\/pokemon\/(\d+)\//);
             const id = match ? Number(match[1]) : null;
-            return {
-              ...poke,
-              id,
-              sprite: id
-                ? `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${id}.png`
-                : ''
-            };
+            return { name: poke.name, id };
           })
-          .filter((poke: any) => poke.id && poke.id <= this.totalPokemons); // <-- só até 1025
-
-        if (pokemonsList.length === 0) {
-          this.isLoadingSidebar = false;
-          this.allLoaded = true;
-          return;
-        }
-
-        Promise.all(
-          pokemonsList.map(async (poke: any) => {
-            try {
-              const details = await this.pokemonService.getPokemonDetails(poke.name).toPromise();
-              return {
-                ...poke,
-                types: details.types.map((t: any) => t.type.name),
-                height: details.height,
-                weight: details.weight
-              };
-            } catch {
-              return poke;
-            }
-          })
-        ).then((pokemonsWithTypes) => {
-          this.pokemons = [...this.pokemons, ...pokemonsWithTypes];
-          this.offset = this.pokemons.length;
-          this.filterPokemons();
-          this.isLoadingSidebar = false;
-          if (this.pokemons.length >= this.totalPokemons) {
-            this.allLoaded = true;
-          }
-        }).catch(() => {
-          this.isLoadingSidebar = false;
-        });
-      },
-      error: () => {
-        this.isLoadingSidebar = false;
+          .filter((poke: any) => poke.id && poke.id <= this.totalPokemons);
       }
     });
+  }
+
+  // Carrega apenas os pokémons da página selecionada
+  async loadPage(page: number) {
+    this.isLoadingSidebar = true;
+    this.currentPage = page;
+    const apiOffset = page * this.pageSize;
+
+    const response: any = await this.pokemonService.getPokemons(apiOffset, this.pageSize).toPromise();
+
+    const pokemonsList = response.results
+      .map((poke: any) => {
+        const match = poke.url.match(/\/pokemon\/(\d+)\//);
+        const id = match ? Number(match[1]) : null;
+        return {
+          ...poke,
+          id,
+          sprite: id
+            ? `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${id}.png`
+            : ''
+        };
+      })
+      .filter((poke: any) => poke.id && poke.id <= this.totalPokemons);
+
+    const pokemonsWithTypes = await Promise.all(
+      pokemonsList.map(async (poke: any) => {
+        try {
+          const details = await this.pokemonService.getPokemonDetails(poke.name).toPromise();
+          return {
+            ...poke,
+            types: details.types.map((t: any) => t.type.name),
+            height: details.height,
+            weight: details.weight
+          };
+        } catch {
+          return poke;
+        }
+      })
+    );
+
+    this.pokemons = pokemonsWithTypes;
+    this.filterPokemons();
+    this.isLoadingSidebar = false;
   }
 
   // Filtros e busca
@@ -189,6 +131,13 @@ export class HomePage implements OnInit {
         const loaded = this.pokemons.find(p => p.id === poke.id);
         return loaded && loaded.favorite;
       });
+    }
+
+    // Paginação manual: só mostra os 150 da página atual, exceto se estiver pesquisando
+    if (!this.searchTerm) {
+      const start = this.currentPage * this.pageSize;
+      const end = start + this.pageSize;
+      filteredNames = filteredNames.slice(start, end);
     }
 
     // Para cada resultado, se já carregado, usa o objeto completo, senão cria um "placeholder"
@@ -218,9 +167,9 @@ export class HomePage implements OnInit {
     this.currentIndex = index;
     let poke = this.filteredPokemons[index];
 
+    // Busca detalhes sob demanda se não carregado
     if (poke.notLoaded) {
-      this.isLoadingDetails = true; // Inicia o loader
-
+      this.isLoadingDetails = true;
       try {
         const details = await this.pokemonService.getPokemonDetails(poke.name).toPromise();
         poke = {
@@ -230,10 +179,10 @@ export class HomePage implements OnInit {
           weight: details.weight,
           sprite: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${poke.id}.png`
         };
-        this.pokemons.push(poke);
+        this.pokemons.push(poke); // Adiciona só esse Pokémon
         this.filteredPokemons[index] = poke;
       } finally {
-        this.isLoadingDetails = false; // Finaliza o loader
+        this.isLoadingDetails = false;
       }
     }
 
@@ -257,19 +206,5 @@ export class HomePage implements OnInit {
 
   closeDetails() {
     this.selectedPokemon = null;
-  }
-
-  loadAllPokemonNames() {
-    this.pokemonService.getPokemons(0, this.totalPokemons).subscribe({
-      next: (response) => {
-        this.allPokemonNames = response.results
-          .map((poke: any) => {
-            const match = poke.url.match(/\/pokemon\/(\d+)\//);
-            const id = match ? Number(match[1]) : null;
-            return { name: poke.name, id };
-          })
-          .filter((poke: any) => poke.id && poke.id <= this.totalPokemons);
-      }
-    });
   }
 }

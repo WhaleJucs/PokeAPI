@@ -38,8 +38,13 @@
         (select)="selectCard($event)"
         (favoriteFilterToggled)="toggleFavoriteFilter()"
         (loadMore)="loadNextBatch()"
-        [isLoadingSidebar]="isLoadingSidebar">
-      </app-pokedex-sidebar>
+        [isLoadingSidebar]="isLoadingSidebar"
+        [currentPage]="currentPage"
+        [totalPages]="totalPages"
+        [pageSize]="pageSize"
+        [totalPokemons]="totalPokemons"
+        (pageChange)="loadPage($event)"
+      ></app-pokedex-sidebar>
     </div>
   </div>
 

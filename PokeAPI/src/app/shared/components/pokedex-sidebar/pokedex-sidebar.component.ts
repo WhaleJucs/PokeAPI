@@ -20,6 +20,13 @@ export class PokedexSidebarComponent implements AfterViewInit, OnChanges {
 
   showOnlyFavorites = false;
 
+  // Adicionando as novas propriedades de paginação
+  @Input() currentPage = 0;
+  @Input() totalPages = 1;
+  @Input() pageSize = 150;
+  @Input() totalPokemons = 1025;
+  @Output() pageChange = new EventEmitter<number>();
+
   ngAfterViewInit() {
     this.scrollToSelected();
   }
@@ -56,5 +63,17 @@ export class PokedexSidebarComponent implements AfterViewInit, OnChanges {
         });
       }
     });
+  }
+
+  // Métodos para mudança de página
+  previousPage() {
+    if (this.currentPage > 0) {
+      this.pageChange.emit(this.currentPage - 1);
+    }
+  }
+  nextPage() {
+    if ((this.currentPage + 1) * this.pageSize < this.totalPokemons) {
+      this.pageChange.emit(this.currentPage + 1);
+    }
   }
 }

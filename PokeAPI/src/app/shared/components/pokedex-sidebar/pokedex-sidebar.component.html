@@ -28,4 +28,23 @@
       <ion-spinner name="dots"></ion-spinner>
     </div>
   </div>
+  <div class="sidebar-pagination">
+    <button
+      class="sidebar-btn left"
+      (click)="previousPage()"
+      [disabled]="currentPage === 0"
+    >
+      Anterior
+    </button>
+    <span class="sidebar-page-info">
+      Página {{ currentPage + 1 }} de {{ totalPages }}
+    </span>
+    <button
+      class="sidebar-btn right"
+      (click)="nextPage()"
+      [disabled]="(currentPage + 1) * pageSize >= totalPokemons"
+    >
+      Próximo
+    </button>
+  </div>
 </div>
