@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, throwError } from 'rxjs';
+import { Observable, throwError, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { PokemonListResponse, PokemonDetails } from '../models/pokemon.model';
 
@@ -22,8 +22,13 @@ export class PokemonService {
       );
   }
 
-  getPokemonDetails(nameOrId: string | number): Observable<PokemonDetails> {
-    return this.http.get<PokemonDetails>(`${this.BASE_URL}/${nameOrId}`);
+  getPokemonDetails(nameOrId: string | number): Observable<PokemonDetails | null> { 
+    return this.http.get<PokemonDetails>(`${this.BASE_URL}/${nameOrId}`).pipe(
+      catchError(error => {
+        console.error(`Erro ao buscar detalhes para ${nameOrId}:`, error);
+        return of(null); 
+      })
+    );
   }
 
   getPokemonSpecies(nameOrId: string | number): Observable<any> { 

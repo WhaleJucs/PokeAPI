@@ -35,10 +35,10 @@ export interface PokemonDetails {
 export interface PokemonData {
   id: number;
   name: string;
-  sprite: string;
-  types: string[];
-  height: number;
-  weight: number;
+  sprite?: string;
+  types?: string[];
+  height?: number;
+  weight?: number;
   favorite?: boolean;
   seen?: boolean;
   notLoaded?: boolean;

@@ -1,9 +1,10 @@
 <ion-content [fullscreen]="true">
-  <div *ngIf="isLoading" class="ion-text-center ion-padding">
-    <ion-spinner name="crescent"></ion-spinner> <p>Carregando Pokémons...</p>
+  <div *ngIf="isLoading" class="loading-container">
+    <ion-spinner name="crescent"></ion-spinner>
+    <p>Carregando Pokémons...</p>
   </div>
 
-  <div class="pokedex-bg" *ngIf="!isLoading">
+  <div *ngIf="filteredPokemons$ | async as pokemons" class="pokedex-bg">
     <div class="pokedex-title">PokéDex BSN</div>
     <div class="pokedex-header">
       <input
@@ -11,30 +12,38 @@
         class="search-bar"
         placeholder="Pesquisar Pokémon..."
         [(ngModel)]="searchTerm"
-        (input)="filterPokemons()" />
+        (input)="filterPokemons()"
+      />
     </div>
     <div class="pokedex-main">
       <div class="card-navigation">
         <button class="arrow-btn" (click)="prevCard()" [disabled]="currentIndex === 0">&#9650;</button>
+
         <ng-container *ngIf="!isLoadingDetails; else loadingDetails">
           <app-pokemon-card
-            *ngIf="filteredPokemons.length"
-            [pokemon]="filteredPokemons[currentIndex]"
-            (cardClick)="goToDetails(filteredPokemons[currentIndex].name)"
-            (favoriteToggled)="toggleFavorite(filteredPokemons[currentIndex])">
+            *ngIf="pokemons.length > 0"
+            [pokemon]="pokemons[currentIndex]"
+            (cardClick)="goToDetails(pokemons[currentIndex].name)"
+            (favoriteToggled)="toggleFavorite(pokemons[currentIndex])"
+          >
           </app-pokemon-card>
+          <div *ngIf="pokemons.length === 0" class="no-results">
+            <p>Nenhum Pokémon encontrado.</p>
+          </div>
         </ng-container>
+
         <ng-template #loadingDetails>
           <div class="details-loader">
             <ion-spinner name="crescent"></ion-spinner>
-            <p>Carregando detalhes do Pokémon...</p>
+            <p>Carregando detalhes...</p>
           </div>
         </ng-template>
-        <button class="arrow-btn" (click)="nextCard()" [disabled]="currentIndex === filteredPokemons.length - 1">&#9660;</button>
+
+        <button class="arrow-btn" (click)="nextCard()" [disabled]="currentIndex >= pokemons.length - 1">&#9660;</button>
       </div>
+
       <app-pokedex-sidebar
-        [pokemons]="filteredPokemons"
-        [currentIndex]="currentIndex"
+        [pokemons]="pokemons" [currentIndex]="currentIndex"
         (select)="selectCard($event)"
         (favoriteFilterToggled)="toggleFavoriteFilter()"
         [isLoadingSidebar]="isLoadingSidebar"
