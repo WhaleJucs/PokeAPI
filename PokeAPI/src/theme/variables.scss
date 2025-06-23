@@ -10,6 +10,28 @@ html, body {
   overflow: hidden;
 }
 
+:root {
+  --theme-pokedex-bg: repeating-linear-gradient(135deg, #b7e083 0 8px, #a3c96d 8px 16px);
+  --theme-title-color: #222;
+  --theme-title-border: #3a5d3a;
+  --theme-card-bg: #e0ffe0;
+  --theme-card-border: #3a5d3a;
+  --theme-card-text-light: #3a5d3a;
+  --theme-card-text-dark: #222;
+  --theme-sidebar-bg: #ffe23a;
+  --theme-sidebar-border: #b7a03a;
+  --theme-sidebar-header-bg: #ffe96b;
+  --theme-sidebar-text-number: #b74c3a;
+  --theme-sidebar-text-name: #222;
+  --theme-sidebar-selected-bg: #fff;
+  --theme-sidebar-selected-text: #222;
+  --theme-sidebar-pagination-bg: #ffe23a;
+  --theme-sidebar-pagination-btn-bg: #b7a03a;
+  --theme-sidebar-pagination-btn-text: #fffbe0;
+  --theme-sidebar-pagination-info-text: #b7a03a;
+  --theme-sidebar-hover-bg: #f0f0f0;
+}
+
 body.dark {
   --ion-background-color: #1a2b2c; 
   --ion-color-primary: #a8d5a8;
