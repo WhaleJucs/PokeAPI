@@ -69,7 +69,7 @@
 
 h2 {
   margin: 8px 0 12px 0;
-  font-size: 1.1em; // Título um pouco menor
+  font-size: 1.1em;
   text-align: center;
 }
 
@@ -90,7 +90,7 @@ h2 {
 
 .poke-details {
   margin: 8px 0;
-  font-size: 0.95em; // Textos internos um pouco menores
+  font-size: 0.95em;
   line-height: 1.6;
   text-align: center;
 }
@@ -101,7 +101,7 @@ h2 {
   border-radius: 10px;
   margin: 12px 0;
   padding: 8px 10px;
-  font-size: 0.95em; // Textos internos um pouco menores
+  font-size: 0.95em; 
   color: #222;
   text-align: center;
   word-break: break-word;
@@ -109,7 +109,7 @@ h2 {
 
 .poke-evolution {
   margin-top: 12px;
-  font-size: 0.95em; // Textos internos um pouco menores
+  font-size: 0.95em;
   text-align: center;
 }
 
@@ -126,14 +126,14 @@ h2 {
   border: 1px solid #3a5d3a;
   border-radius: 8px;
   padding: 2px 8px;
-  font-size: 0.95em; // Textos internos um pouco menores
+  font-size: 0.95em; 
   color: #222;
 }
 
 @media (max-width: 600px) {
   .pokedex-modal {
     width: 98vw;
-    font-size: 0.85em; // Diminui a fonte só em telas pequenas
+    font-size: 0.85em; 
     padding: 12px 2vw;
   }
 }

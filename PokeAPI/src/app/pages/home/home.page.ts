@@ -37,7 +37,7 @@ export class HomePage implements OnInit, OnDestroy {
   public filteredPokemons$: Observable<PokemonData[]> = this.pokemonSource.asObservable();
 
   // --- Propriedades de Estado da UI ---
-  public isLoading: boolean = true; // Inicia como true
+  public isLoading: boolean = true;
   public isLoadingSidebar = false;
   public isLoadingDetails = false;
   public selectedPokemon: PokemonData | null = null;
@@ -46,7 +46,7 @@ export class HomePage implements OnInit, OnDestroy {
   public showOnlyFavorites = false;
 
   // --- Propriedades de Suporte e Cache ---
-  private pokemonsOnPage: PokemonData[] = []; // Cache dos pokémons da página atual
+  private pokemonsOnPage: PokemonData[] = [];
   public totalPokemons = 1025;
   public allPokemonNames: { name: string; id: number }[] = [];
   public currentPage = 0;

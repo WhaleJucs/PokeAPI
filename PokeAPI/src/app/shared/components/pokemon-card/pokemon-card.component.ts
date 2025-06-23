@@ -5,7 +5,7 @@ import {
   IonCardTitle,
   IonCardContent
 } from '@ionic/angular/standalone';
-import { CommonModule } from '@angular/common'; // Para pipes como uppercase
+import { CommonModule } from '@angular/common'; 
 
 @Component({
   selector: 'app-pokemon-card',
@@ -17,7 +17,7 @@ import { CommonModule } from '@angular/common'; // Para pipes como uppercase
     IonCardHeader,
     IonCardTitle,
     IonCardContent,
-    CommonModule // Para pipes como uppercase
+    CommonModule 
   ]
 })
 export class PokemonCardComponent {

@@ -1,6 +1,6 @@
 import { Component, Input, Output, EventEmitter, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { PokemonService } from '../../../core/services/pokemon.service'; // ajuste o caminho se necessário
+import { PokemonService } from '../../../core/services/pokemon.service'; 
 
 @Component({
   selector: 'app-pokemon-details-modal',
@@ -46,9 +46,7 @@ export class PokemonDetailsModalComponent implements OnChanges {
   }
 
   async loadSpeciesAndEvolution() {
-    // Busca espécie para pegar descrição e URL da cadeia evolutiva
     const species = await this.pokemonService.getPokemonSpecies(this.pokemon.name).toPromise();
-    // Pega a primeira descrição em português ou inglês
     const entry = species.flavor_text_entries.find(
       (e: any) => e.language.name === 'pt' || e.language.name === 'pt-BR'
     ) || species.flavor_text_entries.find(

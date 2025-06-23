@@ -14,7 +14,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  height: 100vh; // Garante que o fundo ocupe exatamente a altura da tela
+  height: 100vh;
   background: var(--theme-pokedex-bg, 
     repeating-linear-gradient(
     135deg,
@@ -32,7 +32,7 @@
   border-bottom: 4px solid var(--theme-title-border, #3a5d3a);
   padding: 24px 0 12px 0;
   letter-spacing: 2px;
-  flex-shrink: 0; // Impede que o título encolha
+  flex-shrink: 0;
 }
 
 .pokedex-header {
@@ -42,7 +42,7 @@
   text-align: center;
   font-family: 'Press Start 2P', monospace;
   letter-spacing: 2px;
-  flex-shrink: 0; // Impede que o header encolha
+  flex-shrink: 0;
 }
 
 .search-bar {
@@ -142,7 +142,7 @@ app-pokemon-card {
     max-width: 1200px;
     gap: 1.5rem;
     padding: 1.5rem;
-    height: auto; // Em telas grandes, a altura é controlada pelo .pokedex-bg
+    height: auto; 
   }
 
   .card-navigation {
