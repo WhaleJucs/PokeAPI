@@ -11,7 +11,7 @@ A interface foi desenhada com foco na experiência do usuário, incluindo funcio
 
 ---
 
-### ✨ Principais Funcionalidades
+### Principais Funcionalidades
 
 -   Listagem de Pokémon com paginação e busca por nome/ID.
 -   Visualização de detalhes completos (stats, habilidades, etc.) em um modal.
@@ -20,7 +20,7 @@ A interface foi desenhada com foco na experiência do usuário, incluindo funcio
 -   Modo Escuro com tema customizado e persistência da preferência do usuário (`localStorage`).
 -   Cache de detalhes no lado do cliente para otimização de performance e navegação instantânea.
 
-### 🛠️ Tecnologias Utilizadas
+### Tecnologias Utilizadas
 
 -   **Ionic 7**
 -   **Angular 17** (Standalone Components)
@@ -29,7 +29,7 @@ A interface foi desenhada com foco na experiência do usuário, incluindo funcio
 -   **SCSS**
 -   **Vercel** (Deploy e Hospedagem)
 
-### 🚀 Como Executar Localmente
+### Como Executar Localmente
 
 ```bash
 # 1. Clone o repositório
