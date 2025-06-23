@@ -22,6 +22,7 @@ import { CommonModule } from '@angular/common';
 })
 export class PokemonCardComponent {
   @Input() pokemon: any; // Espera um objeto com nome, id, sprite, etc.
+  @Input() isFavorite: boolean = false;
   @Output() cardClick = new EventEmitter<string>();
   @Output() favoriteToggled = new EventEmitter<void>();
 

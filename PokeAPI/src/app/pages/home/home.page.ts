@@ -1,10 +1,9 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IonContent, IonSpinner, IonLabel, IonToggle } from '@ionic/angular/standalone';
+import { IonContent, IonSpinner, IonLabel, IonToggle, IonModal, Platform } from '@ionic/angular/standalone';
 import { Subject, forkJoin, of, Observable, BehaviorSubject } from 'rxjs';
 import { takeUntil, switchMap, map } from 'rxjs/operators';
-
 import { PokemonService } from '../../core/services/pokemon.service';
 import { PokemonCardComponent } from '../../shared/components/pokemon-card/pokemon-card.component';
 import { PokemonDetailsModalComponent } from '../../shared/components/pokemon-details-modal/pokemon-details-modal.component';
@@ -26,6 +25,7 @@ import { PokemonData, PokemonDetails } from '../../core/models/pokemon.model';
     PokedexSidebarComponent,
     IonLabel,
     IonToggle,
+    IonModal,
   ],
 })
 
@@ -54,9 +54,14 @@ export class HomePage implements OnInit, OnDestroy {
   public get totalPages() { return Math.ceil(this.totalPokemons / this.pageSize); }
   public favorites: { name: string; id: number }[] = [];
   public favoritePokemonsDetails: PokemonData[] = [];
-  public isDarkMode: boolean = false;
 
-  constructor(private pokemonService: PokemonService) {
+  // --- Novas propriedades para controlar o layout ---
+  public isDarkMode: boolean = false;
+  public isSidebarModalOpen = false;
+  public isDesktop = false;
+
+  constructor(private pokemonService: PokemonService,
+              private platform: Platform) {
     const savedTheme = localStorage.getItem('theme');
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
 
@@ -64,6 +69,21 @@ export class HomePage implements OnInit, OnDestroy {
       this.isDarkMode = true;
       document.body.classList.add('dark');
     }
+
+    this.checkPlatform();
+    this.platform.resize.subscribe(() => {
+      this.checkPlatform();
+    });
+  }
+
+  public get isCurrentPokemonFavorite(): boolean {
+    const pokemons = this.pokemonSource.getValue();
+    const currentPokemon = pokemons[this.currentIndex];
+
+    if (!currentPokemon) {
+      return false;
+    }
+    return this.favorites.some(fav => fav.id === currentPokemon.id);
   }
 
   ngOnInit() {
@@ -74,6 +94,15 @@ export class HomePage implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.destroy$.next();
     this.destroy$.complete();
+  }
+
+  // --- Novas funções para o layout responsivo ---
+  private checkPlatform() {
+    this.isDesktop = this.platform.width() > 768;
+  }
+
+  public setOpenSidebar(isOpen: boolean) {
+    this.isSidebarModalOpen = isOpen;
   }
 
   loadAllPokemonNames() {

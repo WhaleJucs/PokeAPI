@@ -135,6 +135,24 @@ app-pokemon-card {
   color: var(--theme-title-color, #222);
 }
 
+.sidebar-trigger-btn {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 0.9em;
+  padding: 12px 20px;
+  margin-top: 1rem;
+  background: var(--theme-sidebar-pagination-btn-bg, #b7a03a);
+  color: var(--theme-sidebar-pagination-btn-text, #fffbe0);
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  box-shadow: 0 2px 4px #0003;
+  transition: transform 0.2s;
+}
+
+.sidebar-trigger-btn:active {
+  transform: translateY(2px);
+}
+
 @media (min-width: 768px) {
   .pokedex-main {
     flex-direction: row;
