@@ -1,65 +1,68 @@
 <ion-content [fullscreen]="true">
-  <div *ngIf="isLoading" class="loading-container">
-    <ion-spinner name="crescent"></ion-spinner>
-    <p>Loading pokémon...</p>
-  </div>
-
-  <div *ngIf="filteredPokemons$ | async as pokemons" class="pokedex-bg">
-    <div class="pokedex-title">PokéDex BSN</div>
-    <div class="pokedex-header">
-      <input
-        type="text"
-        class="search-bar"
-        placeholder="Search Pokémon..."
-        [(ngModel)]="searchTerm"
-        (input)="filterPokemons()"
-      />
-      <div class="theme-toggle">
-        <ion-label>Dark Mode</ion-label>
-        <ion-toggle [(ngModel)]="isDarkMode" (ionChange)="toggleTheme()"></ion-toggle>
-      </div>
+  <ng-container *ngIf="filteredPokemons$ | async as pokemons">
+    
+    <div *ngIf="isLoadingPage" class="loading-container">
+      <ion-spinner name="crescent"></ion-spinner>
+      <p>Loading Pokémon...</p>
     </div>
 
-    <div class="pokedex-main">
-      <div class="card-navigation">
-        <button class="arrow-btn" (click)="prevCard()" [disabled]="currentIndex === 0">&#9650;</button>
+    <div *ngIf="!isLoadingPage" class="pokedex-bg">
+      <div class="pokedex-title">PokéDex BSN</div>
+      <div class="pokedex-header">
+        <input
+          type="text"
+          class="search-bar"
+          placeholder="Search Pokémon..."
+          [(ngModel)]="searchTerm"
+          (input)="filterPokemons()"
+        />
+        <div class="theme-toggle">
+          <ion-label>Dark Mode</ion-label>
+          <ion-toggle [(ngModel)]="isDarkMode" (ionChange)="toggleTheme()"></ion-toggle>
+        </div>
+      </div>
 
-        <ng-container *ngIf="!isCardLoading; else cardLoader">
-          <app-pokemon-card
-            *ngIf="pokemons.length > 0"
-            [pokemon]="pokemons[currentIndex]"
-            [isFavorite]="isCurrentPokemonFavorite"
-            (cardClick)="goToDetails(pokemons[currentIndex].name)"
-            (favoriteToggled)="toggleFavorite(pokemons[currentIndex])">
-          </app-pokemon-card>
-        </ng-container>
+      <div class="pokedex-main">
+        <div class="card-navigation">
+          <button class="arrow-btn" (click)="prevCard()" [disabled]="currentIndex === 0 && currentPage === 0">&#9650;</button>
 
-        <ng-template #cardLoader>
-          <div class="card-loader">
+          <ng-container *ngIf="!isCardLoading; else cardLoader">
+            <app-pokemon-card
+              *ngIf="pokemons.length > 0"
+              [pokemon]="pokemons[currentIndex]"
+              [isFavorite]="isCurrentPokemonFavorite"
+              (cardClick)="goToDetails(pokemons[currentIndex].name)"
+              (favoriteToggled)="toggleFavorite(pokemons[currentIndex])">
+            </app-pokemon-card>
+          </ng-container>
+
+          <ng-template #cardLoader>
+            <div class="card-loader">
               <ion-spinner name="crescent"></ion-spinner>
-          </div>
-        </ng-template>
+            </div>
+          </ng-template>
 
-        <button class="arrow-btn" (click)="nextCard()" [disabled]="currentIndex >= pokemons.length - 1">&#9660;</button>
-        
-        <button *ngIf="!isDesktop" class="sidebar-trigger-btn" (click)="setOpenSidebar(true)">
-          See Pokémon List
-        </button>
+          <button class="arrow-btn" (click)="nextCard()" [disabled]="currentIndex >= pokemons.length - 1 && currentPage >= totalPages - 1">&#9660;</button>
+
+          <button *ngIf="!isDesktop" class="sidebar-trigger-btn" (click)="setOpenSidebar(true)">
+            See Pokémon List
+          </button>
+        </div>
+
+        <app-pokedex-sidebar
+          *ngIf="isDesktop"
+          [pokemons]="pokemons"
+          [currentIndex]="currentIndex"
+          (select)="selectCard($event)"
+          (favoriteFilterToggled)="toggleFavoriteFilter()"
+          [isLoadingSidebar]="isLoadingPage"
+          [currentPage]="currentPage"
+          [totalPages]="totalPages"
+          (pageChange)="loadPage($event)">
+        </app-pokedex-sidebar>
       </div>
-
-      <app-pokedex-sidebar
-        *ngIf="isDesktop"
-        [pokemons]="pokemons"
-        [currentIndex]="currentIndex"
-        (select)="selectCard($event)"
-        (favoriteFilterToggled)="toggleFavoriteFilter()"
-        [isLoadingSidebar]="isLoadingSidebar"
-        [currentPage]="currentPage"
-        [totalPages]="totalPages"
-        (pageChange)="loadPage($event)">
-      </app-pokedex-sidebar>
     </div>
-  </div>
+  </ng-container>
 
   <ion-modal
     [isOpen]="isSidebarModalOpen"
@@ -72,7 +75,7 @@
         [currentIndex]="currentIndex"
         (select)="selectCard($event); setOpenSidebar(false)"
         (favoriteFilterToggled)="toggleFavoriteFilter()"
-        [isLoadingSidebar]="isLoadingSidebar"
+        [isLoadingSidebar]="isLoadingPage"
         [currentPage]="currentPage"
         [totalPages]="totalPages"
         (pageChange)="loadPage($event)">
