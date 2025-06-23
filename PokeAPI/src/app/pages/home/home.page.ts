@@ -54,6 +54,7 @@ export class HomePage implements OnInit, OnDestroy {
   public get totalPages() { return Math.ceil(this.totalPokemons / this.pageSize); }
   public favorites: { name: string; id: number }[] = [];
   public favoritePokemonsDetails: PokemonData[] = [];
+  public isCardLoading: boolean = false;
 
   // --- Novas propriedades para controlar o layout ---
   public isDarkMode: boolean = false;
@@ -207,11 +208,13 @@ export class HomePage implements OnInit, OnDestroy {
         console.error("Falha ao buscar detalhes do Pokémon", error);
       } finally {
         this.isLoadingDetails = false;
+        this.isCardLoading = false;
       }
     } else {
         poke.seen = true;
         const updatedList = [...currentList]; // Cria nova referência do array
         this.pokemonSource.next(updatedList);
+        this.isCardLoading = false;
     }
   }
 
@@ -229,12 +232,20 @@ export class HomePage implements OnInit, OnDestroy {
   }
 
   prevCard() {
-    if (this.currentIndex > 0) this.currentIndex--;
+    if (this.currentIndex > 0) {
+      this.isCardLoading = true; // Ativa o loading
+      this.currentIndex--;
+      this.selectCard(this.currentIndex); // Chama a função que busca os detalhes
+    }
   }
 
   nextCard() {
-    const currentLength = this.pokemonSource.getValue().length;
-    if (this.currentIndex < currentLength - 1) this.currentIndex++;
+    const pokemons = this.pokemonSource.getValue();
+    if (this.currentIndex < pokemons.length - 1) {
+      this.isCardLoading = true; // Ativa o loading
+      this.currentIndex++;
+      this.selectCard(this.currentIndex); // Chama a função que busca os detalhes
+    }
   }
 
   toggleFavorite(pokemon: PokemonData) {

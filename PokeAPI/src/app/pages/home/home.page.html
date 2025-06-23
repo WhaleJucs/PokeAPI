@@ -24,13 +24,21 @@
       <div class="card-navigation">
         <button class="arrow-btn" (click)="prevCard()" [disabled]="currentIndex === 0">&#9650;</button>
 
-        <app-pokemon-card
-          *ngIf="pokemons.length > 0"
-          [pokemon]="pokemons[currentIndex]"
-          [isFavorite]="isCurrentPokemonFavorite"
-          (cardClick)="goToDetails(pokemons[currentIndex].name)"
-          (favoriteToggled)="toggleFavorite(pokemons[currentIndex])">
-        </app-pokemon-card>
+        <ng-container *ngIf="!isCardLoading; else cardLoader">
+          <app-pokemon-card
+            *ngIf="pokemons.length > 0"
+            [pokemon]="pokemons[currentIndex]"
+            [isFavorite]="isCurrentPokemonFavorite"
+            (cardClick)="goToDetails(pokemons[currentIndex].name)"
+            (favoriteToggled)="toggleFavorite(pokemons[currentIndex])">
+          </app-pokemon-card>
+        </ng-container>
+
+        <ng-template #cardLoader>
+          <div class="card-loader">
+              <ion-spinner name="crescent"></ion-spinner>
+          </div>
+        </ng-template>
 
         <button class="arrow-btn" (click)="nextCard()" [disabled]="currentIndex >= pokemons.length - 1">&#9660;</button>
         
