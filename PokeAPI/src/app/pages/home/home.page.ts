@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router, ActivatedRoute } from '@angular/router';
+import { Router } from '@angular/router';
 import { IonContent, IonSpinner, IonLabel, IonToggle, IonModal, Platform } from '@ionic/angular/standalone';
 import { Subject, Observable, BehaviorSubject, of } from 'rxjs';
 import { takeUntil, map } from 'rxjs/operators';
@@ -48,13 +48,7 @@ export class HomePage implements OnInit, OnDestroy {
   public favorites: { name: string; id: number; }[] = []; // Will be subscribed to
   public favoritePokemonsDetails: PokemonData[] = []; // Will be subscribed to
 
-  constructor(
-    private pokemonService: PokemonService,
-    private platform: Platform,
-    private favoriteService: FavoriteService,
-    private router: Router,
-    private route: ActivatedRoute
-  ) {
+  constructor(private pokemonService: PokemonService, private platform: Platform, private favoriteService: FavoriteService, private router: Router) {
     this.initializeTheme();
     this.favoriteService.favorites$.pipe(takeUntil(this.destroy$)).subscribe(favs => this.favorites = favs);
     this.favoriteService.favoritePokemonsDetails$.pipe(takeUntil(this.destroy$)).subscribe(favDetails => this.favoritePokemonsDetails = favDetails);
@@ -62,12 +56,7 @@ export class HomePage implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.loadAllPokemonNames();
-    this.route.queryParams.pipe(takeUntil(this.destroy$)).subscribe(params => {
-      this.currentPage = +params['page'] || 0;
-      this.searchTerm = params['search'] || '';
-      this.showOnlyFavorites = params['favorites'] === 'true';
-      this.applyFiltersAndLoadPage();
-    });
+    this.loadPage(0);
     this.checkPlatform();
     this.platform.resize.pipe(
       takeUntil(this.destroy$)
@@ -81,15 +70,7 @@ export class HomePage implements OnInit, OnDestroy {
 
   // --- LÓGICA DE CARREGAMENTO E NAVEGAÇÃO (Já funcional) ---
 
-  public loadPage(page: number, goToLast: boolean = false) {
-    this.router.navigate([], {
-      relativeTo: this.route,
-      queryParams: { page: page, goToLast: goToLast ? true : null },
-      queryParamsHandling: 'merge',
-    });
-  }
-
-  private loadPageData(page: number, goToLast: boolean = false) {
+  loadPage(page: number, goToLast: boolean = false) {
     this.isLoadingPage = true;
     this.currentPage = page;
     const apiOffset = page * this.pageSize;
@@ -164,7 +145,7 @@ export class HomePage implements OnInit, OnDestroy {
       this.currentIndex++;
       this.loadCardDetails(this.currentIndex);
     } else if (this.currentPage < this.totalPages - 1) {
-      this.loadPage(this.currentPage + 1, false);
+      this.loadPage(this.currentPage + 1);
     }
   }
 
@@ -173,7 +154,7 @@ export class HomePage implements OnInit, OnDestroy {
 
     // Se o filtro de favoritos estiver ativo, atualiza a lista na tela
     if (this.showOnlyFavorites) {
-      this.applyFiltersAndLoadPage();
+      this.filterPokemons();
     } else {
       this.pokemonSource.next([...this.pokemonSource.getValue()]);
     }
@@ -182,28 +163,20 @@ export class HomePage implements OnInit, OnDestroy {
   /**
    * CORREÇÃO 3: Lógica completa de filtro e busca restaurada e adaptada.
    */
-  public onSearchInput(): void {
-    this.router.navigate([], {
-      relativeTo: this.route,
-      queryParams: { search: this.searchTerm || null, page: 0 },
-      queryParamsHandling: 'merge',
-      replaceUrl: true,
-    });
-  }
-
-  private applyFiltersAndLoadPage(): void {
+  public filterPokemons(): void {
     // Se o filtro de favoritos estiver ativo, ele tem prioridade.
     if (this.showOnlyFavorites) {
       this.pokemonSource.next(this.favoritePokemonsDetails);
       this.currentIndex = 0;
       if(this.favoritePokemonsDetails.length > 0) this.loadCardDetails(0);
-      this.isLoadingPage = false;
       return;
     }
 
     // Se a busca estiver vazia, restaura a lista da página atual.
     if (!this.searchTerm) {
-      this.loadPageData(this.currentPage);
+      this.pokemonSource.next(this.pokemonsOnPage);
+      this.currentIndex = 0;
+      this.loadCardDetails(0);
       return;
     }
 
@@ -221,7 +194,6 @@ export class HomePage implements OnInit, OnDestroy {
     this.pokemonSource.next(searchResults);
     this.currentIndex = 0;
     if(searchResults.length > 0) this.loadCardDetails(0);
-    this.isLoadingPage = false;
   }
   
   // --- Funções de Suporte (sem alterações) ---
@@ -268,11 +240,7 @@ export class HomePage implements OnInit, OnDestroy {
 
   public toggleFavoriteFilter(): void {
     this.showOnlyFavorites = !this.showOnlyFavorites;
-    this.router.navigate([], {
-      relativeTo: this.route,
-      queryParams: { favorites: this.showOnlyFavorites ? true : null, page: 0, search: null },
-      queryParamsHandling: 'merge',
-    });
+    this.filterPokemons();
   }
 
   public goToDetails(pokemonId: number): void {
