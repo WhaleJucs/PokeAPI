@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { IonContent, IonSpinner, IonLabel, IonToggle, IonModal, Platform } from '@ionic/angular/standalone';
-import { Subject, Observable, BehaviorSubject, of } from 'rxjs';
+import { Subject, Observable, BehaviorSubject, of, distinctUntilChanged, filter } from 'rxjs';
 import { takeUntil, map } from 'rxjs/operators';
 import { PokemonService } from '../../core/services/pokemon.service';
 import { FavoriteService } from '../../core/services/favorite.service'; // Import the new service
@@ -32,7 +32,7 @@ export class HomePage implements OnInit, OnDestroy {
   public isLoadingPage: boolean = true;
   public isCardLoading: boolean = false;
   public searchTerm: string = '';
-  public currentIndex: number = 0;
+  public currentIndex: number = 0; 
   public selectedPokemon: PokemonData | null = null;
   public showOnlyFavorites = false;
   public isDarkMode: boolean = false;
@@ -57,17 +57,31 @@ export class HomePage implements OnInit, OnDestroy {
     private route: ActivatedRoute
   ) {
     this.initializeTheme();
-    this.favoriteService.favorites$.pipe(takeUntil(this.destroy$)).subscribe(favs => this.favorites = favs);
-    this.favoriteService.favoritePokemonsDetails$.pipe(takeUntil(this.destroy$)).subscribe(favDetails => this.favoritePokemonsDetails = favDetails);
+    this.favoriteService.favorites$.pipe(distinctUntilChanged(), takeUntil(this.destroy$)).subscribe(favs => this.favorites = favs); 
+    this.favoriteService.favoritePokemonsDetails$.pipe(distinctUntilChanged(), takeUntil(this.destroy$)).subscribe(favDetails => this.favoritePokemonsDetails = favDetails);
   }
 
   ngOnInit() {
     this.loadAllPokemonNames();
     this.route.queryParams.pipe(takeUntil(this.destroy$)).subscribe(params => {
+      const oldCurrentPage = this.currentPage;
+      const oldSearchTerm = this.searchTerm;
+      const oldShowOnlyFavorites = this.showOnlyFavorites;
+
       this.currentPage = +params['page'] || 0;
       this.searchTerm = params['search'] || '';
       this.showOnlyFavorites = params['favorites'] === 'true';
-      this.applyFiltersAndLoadPage();
+      const goToLast = params['goToLast'] === 'true'; 
+
+      const pageChanged = this.currentPage !== oldCurrentPage;
+      const filtersChanged = this.searchTerm !== oldSearchTerm || this.showOnlyFavorites !== oldShowOnlyFavorites;
+      const isInitialLoad = this.pokemonsOnPage.length === 0; 
+
+      if (isInitialLoad || pageChanged) { 
+        this.loadPageData(this.currentPage, goToLast); 
+      } else if (filtersChanged) { 
+        this.applyFiltersAndLoadPage(goToLast);
+      }
     });
     this.checkPlatform();
     this.platform.resize.pipe(
@@ -90,7 +104,7 @@ export class HomePage implements OnInit, OnDestroy {
     });
   }
 
-  private loadPageData(page: number, goToLast: boolean = false) {
+  private loadPageData(page: number, goToLast: boolean) { 
     this.isLoadingPage = true;
     this.currentPage = page;
     const apiOffset = page * this.pageSize;
@@ -102,11 +116,22 @@ export class HomePage implements OnInit, OnDestroy {
           return { id, name: p.name, notLoaded: true };
         });
         
-        this.pokemonsOnPage = placeholderPokemons; // Guarda a página atual "original"
+        this.pokemonsOnPage = placeholderPokemons;
         this.pokemonSource.next(placeholderPokemons);
-        this.currentIndex = goToLast ? placeholderPokemons.length - 1 : 0;
-        this.loadCardDetails(this.currentIndex);
+
+        // Defina o índice correto aqui
+        let targetIndex = goToLast ? placeholderPokemons.length - 1 : 0;
+        this.currentIndex = targetIndex;
+
         this.isLoadingPage = false;
+
+        // Carregue os detalhes do card correto
+        if (placeholderPokemons.length > 0) {
+          this.loadCardDetails(this.currentIndex);
+        } else {
+          this.isCardLoading = false;
+          this.pokemonSource.next([]);
+        }
       },
       error: (err) => {
         console.error("Erro ao carregar a lista de Pokémons:", err);
@@ -143,7 +168,21 @@ export class HomePage implements OnInit, OnDestroy {
       this.currentIndex--;
       this.loadCardDetails(this.currentIndex);
     } else if (this.currentPage > 0) {
-      this.loadPage(this.currentPage - 1, true);
+      this.loadPage(this.currentPage - 1, true); // goToLast = true ao voltar página
+    } else {
+      this.currentIndex = 0;
+    }
+  }
+
+  public nextCard() {
+    const pokemons = this.pokemonSource.getValue();
+    if (this.currentIndex < pokemons.length - 1) {
+      this.currentIndex++;
+      this.loadCardDetails(this.currentIndex);
+    } else if (this.currentPage < this.totalPages - 1) {
+      this.loadPage(this.currentPage + 1, false); // goToLast = false ao avançar página
+    } else {
+      this.currentIndex = pokemons.length - 1;
     }
   }
 
@@ -159,37 +198,22 @@ export class HomePage implements OnInit, OnDestroy {
     localStorage.setItem('theme', this.isDarkMode ? 'dark' : 'light');
   }
 
-  public nextCard() {
-    const pokemons = this.pokemonSource.getValue();
-    if (this.currentIndex < pokemons.length - 1) {
-      this.currentIndex++;
-      this.loadCardDetails(this.currentIndex);
-    } else if (this.currentPage < this.totalPages - 1) {
-      this.loadPage(this.currentPage + 1, false);
-    }
-  }
-
   public toggleFavorite(pokemon: PokemonData): void {
     this.favoriteService.toggleFavorite(pokemon);
 
-    // Se o filtro de favoritos estiver ativo, atualiza a lista na tela
-    if (this.showOnlyFavorites) {
-      this.applyFiltersAndLoadPage();
-    } else {
-      this.pokemonSource.next([...this.pokemonSource.getValue()]);
-    }
+    this.applyFiltersAndLoadPage(false); 
   }
 
   public onSearchInput(): void {
     this.router.navigate([], {
       relativeTo: this.route,
-      queryParams: { search: this.searchTerm || null, page: 0 },
+      queryParams: { search: this.searchTerm || null, page: 0, goToLast: null },
       queryParamsHandling: 'merge',
       replaceUrl: true,
     });
   }
 
-  private applyFiltersAndLoadPage(): void {
+  private applyFiltersAndLoadPage(goToLast: boolean): void { 
     const currentSelectedPokemonId = this.pokemonSource.getValue()[this.currentIndex]?.id;
     let newPokemonList: PokemonData[] = [];
 
@@ -197,17 +221,28 @@ export class HomePage implements OnInit, OnDestroy {
     if (this.showOnlyFavorites) {
       newPokemonList = this.favoritePokemonsDetails;
       this.pokemonSource.next(newPokemonList);
-      this.isLoadingPage = false; // Favorites are already loaded
+      this.isLoadingPage = false;
     }
     // Se a busca estiver vazia, restaura a lista da página atual.
     else if (!this.searchTerm) {
-      // Se a lista da página já estiver carregada, use-a. Senão, carregue os dados.
-      if (this.pokemonsOnPage.length > 0 && this.pokemonsOnPage[0].id >= (this.currentPage * this.pageSize + 1)) {
+      if (this.pokemonsOnPage.length > 0 && 
+          this.pokemonsOnPage[0].id === (this.currentPage * this.pageSize + 1)) {
         newPokemonList = this.pokemonsOnPage;
         this.pokemonSource.next(newPokemonList);
-      } else {
-        this.loadPageData(this.currentPage);
-        return; // loadPageData é assíncrono e cuidará do resto.
+
+        // Defina o índice correto aqui
+        let targetIndex = goToLast ? newPokemonList.length - 1 : 0;
+        this.currentIndex = targetIndex;
+
+        if (newPokemonList.length > 0) {
+          this.loadCardDetails(this.currentIndex);
+        } else {
+          this.isCardLoading = false;
+          this.pokemonSource.next([]);
+        }
+      } else { 
+        this.loadPageData(this.currentPage, goToLast); 
+        return;
       }
     }
     // Se há um termo de busca, filtra a lista MESTRA de todos os nomes.
@@ -219,13 +254,17 @@ export class HomePage implements OnInit, OnDestroy {
       newPokemonList = filteredNames.map((pokeRef) => ({ id: pokeRef.id, name: pokeRef.name, notLoaded: true }));
       this.pokemonSource.next(newPokemonList);
       this.isLoadingPage = false;
-    }
 
-    const newIndex = currentSelectedPokemonId ? newPokemonList.findIndex(p => p.id === currentSelectedPokemonId) : -1;
-    this.currentIndex = newIndex > -1 ? newIndex : 0;
+      // Defina o índice correto aqui
+      let targetIndex = 0;
+      this.currentIndex = targetIndex;
 
-    if (newPokemonList.length > 0) {
-      this.loadCardDetails(this.currentIndex);
+      if (newPokemonList.length > 0) {
+        this.loadCardDetails(this.currentIndex);
+      } else {
+        this.isCardLoading = false;
+        this.pokemonSource.next([]);
+      }
     }
   }
   
@@ -274,7 +313,7 @@ export class HomePage implements OnInit, OnDestroy {
     this.showOnlyFavorites = !this.showOnlyFavorites;
     this.router.navigate([], {
       relativeTo: this.route,
-      queryParams: { favorites: this.showOnlyFavorites ? true : null, page: 0, search: null },
+      queryParams: { favorites: this.showOnlyFavorites ? true : null, page: 0, search: null, goToLast: null }, 
       queryParamsHandling: 'merge',
     });
   }
