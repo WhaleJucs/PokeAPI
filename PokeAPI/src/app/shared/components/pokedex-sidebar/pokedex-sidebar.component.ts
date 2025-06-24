@@ -1,6 +1,7 @@
 import { Component, Input, Output, EventEmitter, AfterViewInit, QueryList, ViewChildren, SimpleChanges, OnChanges, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
+import { FormatNamePipe } from '../../pipes/format-name.pipe';
 
 @Component({
   selector: 'app-pokedex-sidebar',
@@ -8,6 +9,7 @@ import { IonicModule } from '@ionic/angular';
   imports: [
     CommonModule,
     IonicModule,
+    FormatNamePipe
   ],
   templateUrl: './pokedex-sidebar.component.html',
   styleUrls: ['./pokedex-sidebar.component.scss'],

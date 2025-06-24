@@ -1,13 +1,14 @@
 import { Component, Input, Output, EventEmitter, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { PokemonService } from '../../../core/services/pokemon.service'; 
+import { FormatNamePipe } from '../../pipes/format-name.pipe';
 
 @Component({
   selector: 'app-pokemon-details-modal',
   templateUrl: './pokemon-details-modal.component.html',
   styleUrls: ['./pokemon-details-modal.component.scss'],
   standalone: true,
-  imports: [CommonModule]
+  imports: [CommonModule, FormatNamePipe,]
 })
 export class PokemonDetailsModalComponent implements OnChanges {
   @Input() pokemon: any;

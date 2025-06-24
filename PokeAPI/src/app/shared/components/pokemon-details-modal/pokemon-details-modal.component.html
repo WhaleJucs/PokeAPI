@@ -5,7 +5,7 @@
     <div class="modal-img">
       <img [src]="pokemon.sprite" [alt]="pokemon.name" />
     </div>
-    <h2>No.{{ pokemon.id }} {{ pokemon.name | uppercase }}</h2>
+    <h2>No.{{ pokemon.id }} {{ pokemon.name | formatName | uppercase }}</h2>
     <div *ngIf="pokemon.types" class="poke-types">
       <span 
         class="poke-type" 
@@ -21,7 +21,7 @@
       <div *ngIf="pokemon.abilities">
         <b>Abilities:</b>
         <span *ngFor="let ab of pokemon.abilities; let last = last">
-          {{ ab.ability.name | uppercase }}<span *ngIf="!last">, </span>
+          {{ ab.ability.name | formatName | uppercase }}<span *ngIf="!last">, </span>
         </span>
       </div>
     </div>
@@ -33,7 +33,7 @@
       <b>Evolution Line:</b>
       <div class="evo-chain">
         <ng-container *ngFor="let evo of evolutionLine; let last = last">
-          <span>{{ evo | uppercase }}</span>
+          <span>{{ evo | formatName | uppercase }}</span>
           <span *ngIf="!last"> &rarr; </span>
         </ng-container>
       </div>

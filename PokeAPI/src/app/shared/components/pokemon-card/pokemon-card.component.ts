@@ -1,3 +1,4 @@
+import { FormatNamePipe } from '../../pipes/format-name.pipe';
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import {
   IonCard,
@@ -17,7 +18,8 @@ import { CommonModule } from '@angular/common';
     IonCardHeader,
     IonCardTitle,
     IonCardContent,
-    CommonModule 
+    CommonModule,
+    FormatNamePipe
   ]
 })
 export class PokemonCardComponent {

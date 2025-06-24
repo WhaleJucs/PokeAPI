@@ -1,5 +1,5 @@
 <ion-card class="pokedex-card" (click)="onCardClick()">
-  <button class="favorite-btn" (click)="toggleFavorite($event)">
+  <button class="favorite-btn" (click)="toggleFavorite($event)" title="Toggle Favorite">
     <svg width="24" height="24" viewBox="0 0 20 20">
       <circle cx="10" cy="10" r="9" fill="#fff" stroke="#222" stroke-width="2"/>
       <path d="M1 10h18" stroke="#222" stroke-width="2"/>
@@ -12,7 +12,7 @@
     <img [src]="pokemon.sprite" [alt]="pokemon.name" width="72" height="72" />
     <div class="pokedex-info">
       <div class="pokedex-id">No.{{ pokemon.id }}</div>
-      <div class="pokedex-name">{{ pokemon.name | uppercase }}</div>
+      <div class="pokedex-name">{{ pokemon.name | formatName }}</div>
       <div *ngIf="pokemon.types">
         <span 
           class="poke-type" 

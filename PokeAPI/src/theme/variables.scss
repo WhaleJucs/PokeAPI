@@ -30,6 +30,8 @@ html, body {
   --theme-sidebar-pagination-btn-text: #fffbe0;
   --theme-sidebar-pagination-info-text: #b7a03a;
   --theme-sidebar-hover-bg: #f0f0f0;
+  --theme-sidebar-item-hover-bg: #fffbe0;
+  --theme-sidebar-item-active-bg: #ffe96b;
 }
 
 body.dark {
@@ -68,4 +70,6 @@ body.dark {
   --theme-sidebar-pagination-btn-bg: #5c7e5c;
   --theme-sidebar-pagination-btn-text: #e0e0e0;
   --theme-sidebar-pagination-info-text: #8cbfa0;
+  --theme-sidebar-item-hover-bg: #2c4a4c;
+  --theme-sidebar-item-active-bg: #3a5d5f;
 }
