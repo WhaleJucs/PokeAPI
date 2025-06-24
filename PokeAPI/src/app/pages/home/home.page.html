@@ -31,7 +31,7 @@
               *ngIf="pokemons.length > 0"
               [pokemon]="pokemons[currentIndex]"
               [isFavorite]="isCurrentPokemonFavorite"
-              (cardClick)="goToDetails(pokemons[currentIndex].id)"
+              (cardClick)="goToDetails(pokemons[currentIndex].name)"
               (favoriteToggled)="toggleFavorite(pokemons[currentIndex])">
             </app-pokemon-card>
           </ng-container>
@@ -82,4 +82,10 @@
       </app-pokedex-sidebar>
     </ng-template>
   </ion-modal>
+
+  <app-pokemon-details-modal
+    *ngIf="selectedPokemon"
+    [pokemon]="selectedPokemon"
+    (close)="closeDetails()">
+  </app-pokemon-details-modal>
 </ion-content>

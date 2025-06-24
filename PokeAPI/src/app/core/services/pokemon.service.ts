@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, map, throwError, of } from 'rxjs';
+import { Observable, throwError, of } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
-import { PokemonListResponse, PokemonDetails, PokemonData } from '../models/pokemon.model';
+import { PokemonListResponse, PokemonDetails } from '../models/pokemon.model';
 
 @Injectable({
   providedIn: 'root'
@@ -40,20 +40,6 @@ export class PokemonService {
         return of(null);
       })
     );
-  }
-
-  public mapToPokemonData(details: PokemonDetails): PokemonData {
-    return {
-      id: details.id,
-      name: details.name,
-      sprite: details.sprites.other?.['official-artwork']?.front_default || details.sprites.front_default,
-      types: details.types.map(t => t.type.name),
-      height: details.height,
-      weight: details.weight,
-      stats: details.stats,
-      abilities: details.abilities,
-      notLoaded: false
-    };
   }
 
   getPokemonSpecies(nameOrId: string | number): Observable<any> {
