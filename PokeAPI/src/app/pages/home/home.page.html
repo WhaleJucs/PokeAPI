@@ -14,7 +14,7 @@
           class="search-bar"
           placeholder="Search Pokémon..."
           [(ngModel)]="searchTerm"
-          (input)="filterPokemons()"
+          (input)="onSearchInput()"
         />
         <div class="theme-toggle">
           <ion-label>Dark Mode</ion-label>
