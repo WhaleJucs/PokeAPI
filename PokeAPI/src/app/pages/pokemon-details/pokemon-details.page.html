@@ -1,13 +1,21 @@
-<ion-header [translucent]="true">
+<ion-header>
   <ion-toolbar>
-    <ion-title>pokemon-details</ion-title>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/home"></ion-back-button>
+    </ion-buttons>
+    <ion-title>{{ (pokemon$ | async)?.name | titlecase }}</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">pokemon-details</ion-title>
-    </ion-toolbar>
-  </ion-header>
+<ion-content class="ion-padding">
+  <ng-container *ngIf="pokemon$ | async as pokemon; else loadingOrError">
+    
+    <app-pokemon-details-modal [pokemon]="pokemon" (close)="(null)"></app-pokemon-details-modal>
+  </ng-container>
+
+  <ng-template #loadingOrError>
+    
+    <p>Carregando ou Pokémon não encontrado...</p>
+  </ng-template>
 </ion-content>
+

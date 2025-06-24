@@ -1,13 +1,13 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 import { IonContent, IonSpinner, IonLabel, IonToggle, IonModal, Platform } from '@ionic/angular/standalone';
 import { Subject, Observable, BehaviorSubject, of } from 'rxjs';
 import { takeUntil, map } from 'rxjs/operators';
 import { PokemonService } from '../../core/services/pokemon.service';
 import { FavoriteService } from '../../core/services/favorite.service'; // Import the new service
 import { PokemonCardComponent } from '../../shared/components/pokemon-card/pokemon-card.component';
-import { PokemonDetailsModalComponent } from '../../shared/components/pokemon-details-modal/pokemon-details-modal.component';
 import { PokedexSidebarComponent } from '../../shared/components/pokedex-sidebar/pokedex-sidebar.component';
 import { PokemonData, PokemonDetails } from '../../core/models/pokemon.model';
 
@@ -20,7 +20,7 @@ const DESKTOP_BREAKPOINT = 768;
   standalone: true,
   imports: [
     IonContent, IonSpinner, FormsModule, CommonModule, PokemonCardComponent,
-    PokemonDetailsModalComponent, PokedexSidebarComponent, IonLabel, IonToggle, IonModal,
+    PokedexSidebarComponent, IonLabel, IonToggle, IonModal,
   ],
 })
 export class HomePage implements OnInit, OnDestroy {
@@ -30,7 +30,6 @@ export class HomePage implements OnInit, OnDestroy {
 
   public isLoadingPage: boolean = true;
   public isCardLoading: boolean = false;
-  public selectedPokemon: PokemonData | null = null;
   public searchTerm: string = '';
   public currentIndex: number = 0;
   public showOnlyFavorites = false;
@@ -49,7 +48,7 @@ export class HomePage implements OnInit, OnDestroy {
   public favorites: { name: string; id: number; }[] = []; // Will be subscribed to
   public favoritePokemonsDetails: PokemonData[] = []; // Will be subscribed to
 
-  constructor(private pokemonService: PokemonService, private platform: Platform, private favoriteService: FavoriteService) {
+  constructor(private pokemonService: PokemonService, private platform: Platform, private favoriteService: FavoriteService, private router: Router) {
     this.initializeTheme();
     this.favoriteService.favorites$.pipe(takeUntil(this.destroy$)).subscribe(favs => this.favorites = favs);
     this.favoriteService.favoritePokemonsDetails$.pipe(takeUntil(this.destroy$)).subscribe(favDetails => this.favoritePokemonsDetails = favDetails);
@@ -108,7 +107,7 @@ export class HomePage implements OnInit, OnDestroy {
     this.isCardLoading = true;
     this.pokemonService.getPokemonDetails(targetPokemon.id).pipe(takeUntil(this.destroy$)).subscribe(details => {
       if (details) {
-        const detailedPokemon = this.mapToPokemonData(details);
+        const detailedPokemon = this.pokemonService.mapToPokemonData(details);
         detailedPokemon.favorite = this.favorites.some(fav => fav.id === detailedPokemon.id);
 
         const updatedPokemons = [...pokemons];
@@ -239,31 +238,12 @@ export class HomePage implements OnInit, OnDestroy {
     return this.favoriteService.isPokemonFavorite(currentPokemon.id);
   }
 
-  private mapToPokemonData(details: PokemonDetails): PokemonData {
-    return {
-      id: details.id,
-      name: details.name,
-      sprite: details.sprites.other?.['official-artwork']?.front_default || details.sprites.front_default,
-      types: details.types.map(t => t.type.name),
-      height: details.height,
-      weight: details.weight,
-      stats: details.stats,
-      abilities: details.abilities,
-      notLoaded: false
-    };
-  }
-  
   public toggleFavoriteFilter(): void {
     this.showOnlyFavorites = !this.showOnlyFavorites;
     this.filterPokemons();
   }
 
-  public goToDetails(pokemonName: string): void {
-    const pokemon = this.pokemonSource.getValue().find(p => p.name === pokemonName);
-    this.selectedPokemon = pokemon || null;
-  }
-  
-  public closeDetails(): void {
-    this.selectedPokemon = null;
+  public goToDetails(pokemonId: number): void {
+    this.router.navigate(['/pokemon', pokemonId]);
   }
 }
