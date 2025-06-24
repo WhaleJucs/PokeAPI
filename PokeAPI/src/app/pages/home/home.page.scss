@@ -27,10 +27,10 @@
   width: 100%;
   text-align: center;
   font-family: 'Press Start 2P', monospace;
-  font-size: 2em;
+  font-size: 1.5em;
   color: var(--theme-title-color, #222);
   border-bottom: 4px solid var(--theme-title-border, #3a5d3a);
-  padding: 24px 0 12px 0;
+  padding: 16px 0 8px 0;
   letter-spacing: 2px;
   flex-shrink: 0;
 }
@@ -38,7 +38,7 @@
 .pokedex-header {
   width: 100%;
   max-width: 420px;
-  padding: 18px 0 10px 0;
+  padding: 12px 0 10px 0;
   text-align: center;
   font-family: 'Press Start 2P', monospace;
   letter-spacing: 2px;
@@ -116,7 +116,7 @@ ion-content {
 
 app-pokedex-sidebar {
   flex: 1;
-  min-height: 0; 
+  min-height: 0;
 }
 
 app-pokemon-card {
@@ -171,12 +171,12 @@ app-pokemon-card {
   }
 
   .card-navigation {
-    width: 35%;
+    width: 45%;
     flex: 0 0 auto;
   }
 
   app-pokedex-sidebar {
-    width: 65%;
+    width: 55%;
     flex: 1 1 auto;
   }
 }
@@ -184,13 +184,5 @@ app-pokemon-card {
 @media (min-width: 1400px) {
   .pokedex-main {
     max-width: 1300px;
-  }
-
-  .card-navigation {
-    width: 30%;
-  }
-
-  app-pokedex-sidebar {
-    width: 70%;
   }
 }
