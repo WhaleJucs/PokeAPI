@@ -190,43 +190,36 @@ export class HomePage implements OnInit, OnDestroy {
   }
 
   private applyFiltersAndLoadPage(): void {
-    const currentSelectedPokemonId = this.pokemonSource.getValue()[this.currentIndex]?.id;
-    let newPokemonList: PokemonData[] = [];
-
     // Se o filtro de favoritos estiver ativo, ele tem prioridade.
     if (this.showOnlyFavorites) {
-      newPokemonList = this.favoritePokemonsDetails;
-      this.pokemonSource.next(newPokemonList);
-      this.isLoadingPage = false; // Favorites are already loaded
-    }
-    // Se a busca estiver vazia, restaura a lista da página atual.
-    else if (!this.searchTerm) {
-      // Se a lista da página já estiver carregada, use-a. Senão, carregue os dados.
-      if (this.pokemonsOnPage.length > 0 && this.pokemonsOnPage[0].id >= (this.currentPage * this.pageSize + 1)) {
-        newPokemonList = this.pokemonsOnPage;
-        this.pokemonSource.next(newPokemonList);
-      } else {
-        this.loadPageData(this.currentPage);
-        return; // loadPageData é assíncrono e cuidará do resto.
-      }
-    }
-    // Se há um termo de busca, filtra a lista MESTRA de todos os nomes.
-    else {
-      const term = this.searchTerm.toLowerCase();
-      const filteredNames = this.allPokemonNames.filter(
-        (poke) => poke.name.toLowerCase().includes(term) || poke.id.toString().startsWith(term)
-      );
-      newPokemonList = filteredNames.map((pokeRef) => ({ id: pokeRef.id, name: pokeRef.name, notLoaded: true }));
-      this.pokemonSource.next(newPokemonList);
+      this.pokemonSource.next(this.favoritePokemonsDetails);
+      this.currentIndex = 0;
+      if(this.favoritePokemonsDetails.length > 0) this.loadCardDetails(0);
       this.isLoadingPage = false;
+      return;
     }
 
-    const newIndex = currentSelectedPokemonId ? newPokemonList.findIndex(p => p.id === currentSelectedPokemonId) : -1;
-    this.currentIndex = newIndex > -1 ? newIndex : 0;
-
-    if (newPokemonList.length > 0) {
-      this.loadCardDetails(this.currentIndex);
+    // Se a busca estiver vazia, restaura a lista da página atual.
+    if (!this.searchTerm) {
+      this.loadPageData(this.currentPage);
+      return;
     }
+
+    // Se há um termo de busca, filtra a lista MESTRA de todos os nomes.
+    const term = this.searchTerm.toLowerCase();
+    const filteredNames = this.allPokemonNames.filter(
+      (poke) => poke.name.toLowerCase().includes(term) || poke.id.toString().startsWith(term)
+    );
+
+    // Cria uma lista de placeholders com base nos resultados da busca.
+    const searchResults: PokemonData[] = filteredNames.map((pokeRef) => {
+      return { id: pokeRef.id, name: pokeRef.name, notLoaded: true };
+    });
+
+    this.pokemonSource.next(searchResults);
+    this.currentIndex = 0;
+    if(searchResults.length > 0) this.loadCardDetails(0);
+    this.isLoadingPage = false;
   }
   
   // --- Funções de Suporte ---
