@@ -8,7 +8,6 @@ import { takeUntil, map } from 'rxjs/operators';
 import { PokemonService } from '../../core/services/pokemon.service';
 import { FavoriteService } from '../../core/services/favorite.service'; // Import the new service
 import { PokemonCardComponent } from '../../shared/components/pokemon-card/pokemon-card.component';
-import { PokemonDetailsModalComponent } from '../../shared/components/pokemon-details-modal/pokemon-details-modal.component';
 import { PokedexSidebarComponent } from '../../shared/components/pokedex-sidebar/pokedex-sidebar.component';
 import { PokemonData, PokemonDetails } from '../../core/models/pokemon.model';
 
@@ -21,7 +20,7 @@ const DESKTOP_BREAKPOINT = 768;
   standalone: true,
   imports: [
     IonContent, IonSpinner, FormsModule, CommonModule, PokemonCardComponent,
-    PokedexSidebarComponent, IonLabel, IonToggle, IonModal, PokemonDetailsModalComponent,
+    PokedexSidebarComponent, IonLabel, IonToggle, IonModal,
   ],
 })
 export class HomePage implements OnInit, OnDestroy {
@@ -33,7 +32,6 @@ export class HomePage implements OnInit, OnDestroy {
   public isCardLoading: boolean = false;
   public searchTerm: string = '';
   public currentIndex: number = 0;
-  public selectedPokemon: PokemonData | null = null;
   public showOnlyFavorites = false;
   public isDarkMode: boolean = false;
   public isSidebarModalOpen = false;
@@ -46,6 +44,7 @@ export class HomePage implements OnInit, OnDestroy {
   public get totalPages() { return Math.ceil(this.totalPokemons / this.pageSize); }
   private allPokemonNames: { name: string; id: number; }[] = [];
 
+  // Expose favorites from the service
   public favorites: { name: string; id: number; }[] = []; // Will be subscribed to
   public favoritePokemonsDetails: PokemonData[] = []; // Will be subscribed to
 
@@ -80,7 +79,7 @@ export class HomePage implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
-  // --- LÓGICA DE CARREGAMENTO E NAVEGAÇÃO ---
+  // --- LÓGICA DE CARREGAMENTO E NAVEGAÇÃO (Já funcional) ---
 
   public loadPage(page: number, goToLast: boolean = false) {
     this.router.navigate([], {
@@ -180,6 +179,9 @@ export class HomePage implements OnInit, OnDestroy {
     }
   }
 
+  /**
+   * CORREÇÃO 3: Lógica completa de filtro e busca restaurada e adaptada.
+   */
   public onSearchInput(): void {
     this.router.navigate([], {
       relativeTo: this.route,
@@ -222,7 +224,7 @@ export class HomePage implements OnInit, OnDestroy {
     this.isLoadingPage = false;
   }
   
-  // --- Funções de Suporte ---
+  // --- Funções de Suporte (sem alterações) ---
 
   public loadAllPokemonNames(): void {
     this.pokemonService.getPokemons(0, this.totalPokemons).pipe(takeUntil(this.destroy$)).subscribe({
@@ -235,6 +237,7 @@ export class HomePage implements OnInit, OnDestroy {
       },
       error: (err) => {
         console.error("Erro ao carregar a lista de nomes de Pokémons:", err);
+        // Opcionalmente, adicione lógica para notificar o usuário sobre o erro.
       },
     });
   }
@@ -259,7 +262,7 @@ export class HomePage implements OnInit, OnDestroy {
   public get isCurrentPokemonFavorite(): boolean {
     const pokemons = this.pokemonSource.getValue();
     const currentPokemon = pokemons[this.currentIndex];
-    if (!currentPokemon) return false; 
+    if (!currentPokemon) return false; // Handle case where currentPokemon might be undefined
     return this.favoriteService.isPokemonFavorite(currentPokemon.id);
   }
 
@@ -272,11 +275,7 @@ export class HomePage implements OnInit, OnDestroy {
     });
   }
 
-  public goToDetails(pokemon: PokemonData): void {
-    this.selectedPokemon = pokemon;
-  }
-
-  public closeDetails(): void {
-    this.selectedPokemon = null;
+  public goToDetails(pokemonId: number): void {
+    this.router.navigate(['/pokemon', pokemonId]);
   }
 }
