@@ -42,6 +42,4 @@ export interface PokemonData {
   favorite?: boolean;
   seen?: boolean;
   notLoaded?: boolean;
-  stats?: any[];
-  abilities?: any[];
 }
