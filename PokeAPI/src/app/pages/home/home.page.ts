@@ -5,13 +5,10 @@ import { IonContent, IonSpinner, IonLabel, IonToggle, IonModal, Platform } from 
 import { Subject, Observable, BehaviorSubject, of } from 'rxjs';
 import { takeUntil, map } from 'rxjs/operators';
 import { PokemonService } from '../../core/services/pokemon.service';
-import { FavoriteService } from '../../core/services/favorite.service'; // Import the new service
 import { PokemonCardComponent } from '../../shared/components/pokemon-card/pokemon-card.component';
 import { PokemonDetailsModalComponent } from '../../shared/components/pokemon-details-modal/pokemon-details-modal.component';
 import { PokedexSidebarComponent } from '../../shared/components/pokedex-sidebar/pokedex-sidebar.component';
 import { PokemonData, PokemonDetails } from '../../core/models/pokemon.model';
-
-const DESKTOP_BREAKPOINT = 768;
 
 @Component({
   selector: 'app-home',
@@ -43,25 +40,19 @@ export class HomePage implements OnInit, OnDestroy {
   public currentPage = 0;
   public pageSize = 150;
   public get totalPages() { return Math.ceil(this.totalPokemons / this.pageSize); }
-  private allPokemonNames: { name: string; id: number; }[] = [];
+  public allPokemonNames: { name: string; id: number; }[] = [];
+  public favorites: { name: string; id: number; }[] = [];
+  public favoritePokemonsDetails: PokemonData[] = [];
 
-  // Expose favorites from the service
-  public favorites: { name: string; id: number; }[] = []; // Will be subscribed to
-  public favoritePokemonsDetails: PokemonData[] = []; // Will be subscribed to
-
-  constructor(private pokemonService: PokemonService, private platform: Platform, private favoriteService: FavoriteService) {
+  constructor(private pokemonService: PokemonService, private platform: Platform) {
     this.initializeTheme();
-    this.favoriteService.favorites$.pipe(takeUntil(this.destroy$)).subscribe(favs => this.favorites = favs);
-    this.favoriteService.favoritePokemonsDetails$.pipe(takeUntil(this.destroy$)).subscribe(favDetails => this.favoritePokemonsDetails = favDetails);
+    this.checkPlatform();
+    this.platform.resize.subscribe(() => this.checkPlatform());
   }
 
   ngOnInit() {
     this.loadAllPokemonNames();
     this.loadPage(0);
-    this.checkPlatform();
-    this.platform.resize.pipe(
-      takeUntil(this.destroy$)
-    ).subscribe(() => this.checkPlatform());
   }
 
   ngOnDestroy() {
@@ -110,7 +101,7 @@ export class HomePage implements OnInit, OnDestroy {
       if (details) {
         const detailedPokemon = this.mapToPokemonData(details);
         detailedPokemon.favorite = this.favorites.some(fav => fav.id === detailedPokemon.id);
-
+        
         const updatedPokemons = [...pokemons];
         updatedPokemons[index] = detailedPokemon;
         this.pokemonSource.next(updatedPokemons);
@@ -118,7 +109,7 @@ export class HomePage implements OnInit, OnDestroy {
       this.isCardLoading = false;
     });
   }
-
+  
   public prevCard() {
     if (this.currentIndex > 0) {
       this.currentIndex--;
@@ -126,18 +117,6 @@ export class HomePage implements OnInit, OnDestroy {
     } else if (this.currentPage > 0) {
       this.loadPage(this.currentPage - 1, true);
     }
-  }
-
-  public selectCard(index: number) {
-    this.currentIndex = index;
-    this.loadCardDetails(this.currentIndex);
-  }
-
-  // --- FUNÇÕES CORRIGIDAS ---
-
-  public toggleTheme(): void {
-    document.body.classList.toggle('dark', this.isDarkMode);
-    localStorage.setItem('theme', this.isDarkMode ? 'dark' : 'light');
   }
 
   public nextCard() {
@@ -150,13 +129,45 @@ export class HomePage implements OnInit, OnDestroy {
     }
   }
 
-  public toggleFavorite(pokemon: PokemonData): void {
-    this.favoriteService.toggleFavorite(pokemon);
+  public selectCard(index: number) {
+    this.currentIndex = index;
+    this.loadCardDetails(this.currentIndex);
+  }
 
+  // --- FUNÇÕES CORRIGIDAS ---
+
+  /**
+   * CORREÇÃO 1: Lógica do Dark Mode simplificada para evitar o bug de 2 cliques.
+   */
+  public toggleTheme(): void {
+    // A variável 'this.isDarkMode' já foi atualizada pelo [(ngModel)].
+    // Apenas aplicamos os efeitos colaterais.
+    document.body.classList.toggle('dark', this.isDarkMode);
+    localStorage.setItem('theme', this.isDarkMode ? 'dark' : 'light');
+  }
+
+  /**
+   * CORREÇÃO 2: Lógica de favoritos agora atualiza a lista de detalhes.
+   */
+  public toggleFavorite(pokemon: PokemonData): void {
+    if (!pokemon || pokemon.notLoaded) return; // Não favoritar placeholders
+
+    const isCurrentlyFavorite = this.favorites.some(fav => fav.id === pokemon.id);
+    pokemon.favorite = !isCurrentlyFavorite;
+
+    if (pokemon.favorite) {
+      this.favorites.push({ name: pokemon.name, id: pokemon.id });
+      this.favoritePokemonsDetails.push(pokemon);
+    } else {
+      this.favorites = this.favorites.filter(fav => fav.id !== pokemon.id);
+      this.favoritePokemonsDetails = this.favoritePokemonsDetails.filter(fav => fav.id !== pokemon.id);
+    }
+    
     // Se o filtro de favoritos estiver ativo, atualiza a lista na tela
     if (this.showOnlyFavorites) {
       this.filterPokemons();
     } else {
+       // Senão, apenas força a atualização do estado do card atual
       this.pokemonSource.next([...this.pokemonSource.getValue()]);
     }
   }
@@ -207,11 +218,7 @@ export class HomePage implements OnInit, OnDestroy {
           const id = match ? Number(match[1]) : 0;
           return { name: poke.name, id };
         }).filter((poke) => poke.id && poke.id <= this.totalPokemons);
-      },
-      error: (err) => {
-        console.error("Erro ao carregar a lista de nomes de Pokémons:", err);
-        // Opcionalmente, adicione lógica para notificar o usuário sobre o erro.
-      },
+      }
     });
   }
 
@@ -225,7 +232,7 @@ export class HomePage implements OnInit, OnDestroy {
   }
 
   private checkPlatform() {
-    this.isDesktop = this.platform.width() > DESKTOP_BREAKPOINT;
+    this.isDesktop = this.platform.width() > 768;
   }
 
   public setOpenSidebar(isOpen: boolean) {
@@ -235,8 +242,8 @@ export class HomePage implements OnInit, OnDestroy {
   public get isCurrentPokemonFavorite(): boolean {
     const pokemons = this.pokemonSource.getValue();
     const currentPokemon = pokemons[this.currentIndex];
-    if (!currentPokemon) return false; // Handle case where currentPokemon might be undefined
-    return this.favoriteService.isPokemonFavorite(currentPokemon.id);
+    if (!currentPokemon) return false;
+    return this.favorites.some(fav => fav.id === currentPokemon.id);
   }
 
   private mapToPokemonData(details: PokemonDetails): PokemonData {
@@ -247,8 +254,8 @@ export class HomePage implements OnInit, OnDestroy {
       types: details.types.map(t => t.type.name),
       height: details.height,
       weight: details.weight,
-      stats: details.stats,
-      abilities: details.abilities,
+      stats: (details as any).stats,
+      abilities: (details as any).abilities,
       notLoaded: false
     };
   }
